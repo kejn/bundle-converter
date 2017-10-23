@@ -1,0 +1,15 @@
+/* Apply the java-library plugin to add support for Java Library
+ * https://docs.gradle.org/3.5/userguide/java_library_plugin.html
+ */
+apply plugin: 'java-library'
+
+repositories {
+    jcenter()
+}
+
+/*
+ * Remember to distinguish between 'api' and 'implementation' dependencies
+ */
+dependencies {
+    testImplementation 'junit:junit:4.12'
+}
