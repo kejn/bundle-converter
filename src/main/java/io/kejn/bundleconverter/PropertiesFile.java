@@ -6,7 +6,6 @@ import java.io.File;
  * Represents a file with {@value #FILE_EXTENSION} extension.
  * 
  * @author kejn
- *
  */
 public class PropertiesFile {
 
@@ -14,6 +13,10 @@ public class PropertiesFile {
 
 	private File file;
 
+	public PropertiesFile(String path) {
+		this(new File(path));
+	}
+	
 	public PropertiesFile(File file) {
 		if (!fileExtensionIsValid(file)) {
 			throw new IllegalArgumentException("Input file should have '.properties' extension");

@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class PropertiesFileTest {
 
-	private static final String VALID_FILE_PATH = "src/test/resources/testdata/bundle.properties";
+	static final String VALID_FILE_PATH = "src/test/resources/testdata/bundle.properties";
 
 	private PropertiesFile propertiesFile;
 
@@ -33,11 +33,8 @@ public class PropertiesFileTest {
 	 */
 	@Test
 	public void shouldAcceptOnlyPropertiesFilesValidFileName() {
-		// given
-		final File bundle = new File(VALID_FILE_PATH);
-
 		// when
-		propertiesFile = new PropertiesFile(bundle);
+		propertiesFile = new PropertiesFile(VALID_FILE_PATH);
 
 		// then
 		fileIsOK();
@@ -78,15 +75,12 @@ public class PropertiesFileTest {
 	 */
 	@Test
 	public void filePassedAsConstructorArgumentMustExist() {
-		// given
-		final File validFile = new File(VALID_FILE_PATH);
-
 		// when
-		propertiesFile = new PropertiesFile(validFile);
+		propertiesFile = new PropertiesFile(VALID_FILE_PATH);
 
 		// then
-		assertTrue(validFile.exists());
 		fileIsOK();
+		assertTrue(propertiesFile.getFile().exists());
 	}
 
 }
