@@ -11,5 +11,6 @@ repositories {
  * Remember to distinguish between 'api' and 'implementation' dependencies
  */
 dependencies {
+    compile 'com.google.guava:guava:23.3-jre'
     testImplementation 'junit:junit:4.12'
 }
