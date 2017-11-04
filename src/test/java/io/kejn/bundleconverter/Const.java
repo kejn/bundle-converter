@@ -16,4 +16,6 @@ final class Const {
 
     static final String VALID_FILE_PATH_DEFAULT_BUNDLE_OTHER_LOCATION = format("%s/otherlocation/bundle.properties",
 	    VALID_DIR_PATH);
+
+    static final String VALID_FILE_PATH_DEFAULT_VALUES = format("%s/values.properties", VALID_DIR_PATH);
 }

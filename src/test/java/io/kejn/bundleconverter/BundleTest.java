@@ -34,7 +34,7 @@ public class BundleTest {
      * All loaded files should have the ".properties" extension.
      */
     @Test
-    public void shouldAcceptOnlyPropertiesFilesValidFileName() {
+    public void shouldAcceptOnlyPropertiesFilesValidFilePath() {
 	// when
 	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
 

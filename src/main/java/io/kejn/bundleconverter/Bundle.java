@@ -1,6 +1,9 @@
 package io.kejn.bundleconverter;
 
 import java.io.File;
+import java.util.Locale;
+
+import com.google.common.io.Files;
 
 /**
  * Represents a file with {@value #FILE_EXTENSION} extension. It is
@@ -11,14 +14,30 @@ import java.io.File;
  */
 public class Bundle {
 
-    private static final String FILE_EXTENSION = ".properties";
+    private static final String FILE_EXTENSION = "properties";
+    private static final String UNDERSCORE = "_";
 
-    private File file;
+    private final File file;
 
-    public Bundle(String path) {
-	this(new File(path));
+    /**
+     * Creates a new {@link Bundle} object using the specified path to the
+     * properties file.
+     * 
+     * @param filePath the path to the file with '.properties' extension
+     * @throws IllegalArgumentException if the specified file path does not exist
+     */
+    public Bundle(String filePath) {
+	this(new File(filePath));
     }
 
+    /**
+     * Creates a new {@link Bundle} object using the specified {@link File} object.
+     * 
+     * @param file the file object that should hold a file with the '.properties'
+     *            extension
+     * @throws IllegalArgumentException if the path specified for the <b>file</b>
+     *             does not exist
+     */
     public Bundle(File file) {
 	if (!fileExtensionIsValid(file)) {
 	    throw new IllegalArgumentException("Input file should have '.properties' extension");
@@ -27,11 +46,25 @@ public class Bundle {
     }
 
     private boolean fileExtensionIsValid(File file) {
-	return file.getName().toLowerCase().endsWith(FILE_EXTENSION);
+	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
     }
 
     public File getFile() {
 	return file;
+    }
+
+    public String getName() {
+	return getNameWithVariants().split(UNDERSCORE)[0];
+    }
+
+    public String getNameWithVariants() {
+	return Files.getNameWithoutExtension(file.getName());
+    }
+
+    public Locale getLocale() {
+	String[] nameWithVariants = getNameWithVariants().split(UNDERSCORE);
+	String language = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
+	return new Locale(language);
     }
 
     /*
@@ -55,6 +88,6 @@ public class Bundle {
 
     @Override
     public String toString() {
-	return "Bundle [" + file + "]";
+	return "Bundle [" + getNameWithVariants() + "]";
     }
 }
