@@ -1,10 +1,6 @@
 package io.kejn.bundleconverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 
@@ -26,8 +22,12 @@ public class BundleTest {
     }
 
     private void bundleIsOK() {
+	bundleIsOK(bundle);
+    }
+    
+    private void bundleIsOK(Bundle bundle) {
 	assertNotNull(bundle);
-	assertNotNull(bundle.getFile());
+	assertNotNull(bundle.getProperties());
     }
 
     /**
@@ -62,27 +62,13 @@ public class BundleTest {
     @Test
     public void fileExtensionCheckShouldBeCaseInsensitive() {
 	// given
-	final File validFile = new File(Const.VALID_FILE_PATH_DEFAULT_BUNDLE.toUpperCase());
+	final File validFile = new File(Const.VALID_FILE_PATH_UPPERCASE_BUNDLE);
 
 	// when
 	bundle = new Bundle(validFile);
 
 	// then
 	bundleIsOK();
-    }
-
-    /**
-     * The {@link File} passed as an argument to the {@link Bundle} constructor must
-     * exist.
-     */
-    @Test
-    public void filePassedAsConstructorArgumentMustExist() {
-	// when
-	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-
-	// then
-	bundleIsOK();
-	assertTrue(bundle.getFile().exists());
     }
 
     /**
@@ -93,6 +79,7 @@ public class BundleTest {
      * This is an extensive test checking if the {@link Object#equals(Object)}
      * paradigms are met.
      * <p>
+     * 
      * @see Object#equals(Object)
      */
     @Test
@@ -103,6 +90,10 @@ public class BundleTest {
 	Bundle bundle3 = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
 
 	// then
+	bundleIsOK();
+	bundleIsOK(bundle2);
+	bundleIsOK(bundle3);
+	
 	assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle2.hashCode());
 	assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle3.hashCode());
 
@@ -125,6 +116,8 @@ public class BundleTest {
 	Bundle bundle2 = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE_OTHER_LOCATION);
 
 	// then
+	bundleIsOK();
+	bundleIsOK(bundle2);
 	assertEquals(bundle.hashCode(), bundle2.hashCode());
 	assertEquals(bundle, bundle2);
     }
@@ -141,7 +134,10 @@ public class BundleTest {
 	Bundle bundle2 = new Bundle(Const.VALID_FILE_PATH_POLISH_BUNDLE);
 
 	// then
+	bundleIsOK();
+	bundleIsOK(bundle2);
 	assertNotEquals(bundle.hashCode(), bundle2.hashCode());
 	assertNotEquals(bundle, bundle2);
     }
+    
 }

@@ -1,7 +1,9 @@
 package io.kejn.bundleconverter;
 
 import java.io.File;
-import java.util.Locale;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import com.google.common.io.Files;
 
@@ -19,12 +21,17 @@ public class Bundle {
 
     private final File file;
 
+    private Properties properties;
+
+    /*
+     * API.
+     */
+
     /**
      * Creates a new {@link Bundle} object using the specified path to the
      * properties file.
      * 
      * @param filePath the path to the file with '.properties' extension
-     * @throws IllegalArgumentException if the specified file path does not exist
      */
     public Bundle(String filePath) {
 	this(new File(filePath));
@@ -35,22 +42,12 @@ public class Bundle {
      * 
      * @param file the file object that should hold a file with the '.properties'
      *            extension
-     * @throws IllegalArgumentException if the path specified for the <b>file</b>
-     *             does not exist
      */
     public Bundle(File file) {
 	if (!fileExtensionIsValid(file)) {
 	    throw new IllegalArgumentException("Input file should have '.properties' extension");
 	}
 	this.file = file;
-    }
-
-    private boolean fileExtensionIsValid(File file) {
-	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
-    }
-
-    public File getFile() {
-	return file;
     }
 
     public String getName() {
@@ -61,15 +58,40 @@ public class Bundle {
 	return Files.getNameWithoutExtension(file.getName());
     }
 
-    public Locale getLocale() {
+    public boolean isDefaultBundle() {
+	return !getNameWithVariants().contains(UNDERSCORE);
+    }
+
+    public Language getLanguage() {
 	String[] nameWithVariants = getNameWithVariants().split(UNDERSCORE);
 	String language = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
-	return new Locale(language);
+	return Language.forISOCode(language);
+    }
+
+    public Properties getProperties() {
+	if (properties == null && file.exists()) {
+	    try {
+		properties = new Properties();
+		properties.load(new FileInputStream(file));
+	    } catch (IOException e) {
+		properties = null;
+	    }
+	}
+	return properties;
+    }
+    
+    /*
+     * Private methods.
+     */
+
+    private boolean fileExtensionIsValid(File file) {
+	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
     }
 
     /*
      * Methods overridden from Object.
      */
+
     @Override
     public int hashCode() {
 	return file.getName().hashCode();
@@ -79,7 +101,7 @@ public class Bundle {
     public boolean equals(Object obj) {
 	if (obj instanceof Bundle) {
 	    Bundle other = (Bundle) obj;
-	    if (file != null && file.getName().equals(other.getFile().getName())) {
+	    if (getNameWithVariants().equals(other.getNameWithVariants())) {
 		return true;
 	    }
 	}
@@ -88,6 +110,7 @@ public class Bundle {
 
     @Override
     public String toString() {
-	return "Bundle [" + getNameWithVariants() + "]";
+	return "Bundle[" + file + "]";
     }
+
 }

@@ -1,7 +1,6 @@
 package io.kejn.bundleconverter;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -16,7 +15,7 @@ public class BundleGroup {
 
     private final Bundle defaultBundle;
 
-    private Map<Locale, Bundle> bundles = new HashMap<>();
+    private Map<Language, Bundle> bundles = new HashMap<>();
 
     /**
      * Creates a group of {@link Bundle}s and initializes it with a {@link Bundle}
@@ -35,6 +34,12 @@ public class BundleGroup {
      */
     public BundleGroup(Bundle defaultBundle, Bundle... otherBundleVariants) {
 	Objects.requireNonNull(defaultBundle, "The default Bundle cannot be null");
+
+	if (!defaultBundle.isDefaultBundle()) {
+	    throw new IllegalArgumentException(
+		    "The defaultBundle cannot be a language variant. "
+		    + "It must be the bundle with the default values, not the translated values");
+	}
 
 	this.defaultBundle = defaultBundle;
 	add(defaultBundle);
@@ -57,10 +62,15 @@ public class BundleGroup {
      * @param bundle bundle to be added to this group
      * @return <tt>true</tt> if the bundle was added, <tt>false</tt> otherwise.
      * @see Set#add(Object)
+     * 
+     * @throws IllegalArgumentException if <b>otherBundleVariants</b> array contain
+     *             at least one {@link Bundle} which is not a language variant of
+     *             <b>defaultBundle</b>, but a completely different bundle than
+     *             <b>defaultBundle</b>
      */
     public boolean add(Bundle bundle) {
 	checkBundle(bundle);
-	return bundles.put(bundle.getLocale(), bundle) == null;
+	return bundles.put(bundle.getLanguage(), bundle) == null;
     }
 
     /**
@@ -74,8 +84,16 @@ public class BundleGroup {
 	return bundles.size();
     }
 
-    public Bundle getBundle(Locale locale) {
+    public boolean contains(Bundle bundle) {
+	return bundles.get(bundle.getLanguage()) != null;
+    }
+    
+    public Bundle getBundle(Language locale) {
 	return bundles.get(locale);
+    }
+
+    public String getName() {
+	return defaultBundle.getName();
     }
 
 }

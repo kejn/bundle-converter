@@ -1,7 +1,25 @@
-/* Apply the java-library plugin to add support for Java Library
- * https://docs.gradle.org/3.5/userguide/java_library_plugin.html
- */
 apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'io.kejn'
+            artifactId 'bundle-converter'
+            version '1.0-SNAPSHOT'
+            
+            from components.java
+            
+            artifact sourceJar {
+                classifier 'sources'
+            }
+        }
+    }
+}
 
 repositories {
     jcenter()
@@ -11,6 +29,6 @@ repositories {
  * Remember to distinguish between 'api' and 'implementation' dependencies
  */
 dependencies {
-    compile 'com.google.guava:guava:23.3-jre'
+    implementation 'com.google.guava:guava:23.3-jre'
     testImplementation 'junit:junit:4.12'
 }
