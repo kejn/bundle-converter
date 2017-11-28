@@ -88,12 +88,16 @@ public class BundleGroup {
 	return bundles.get(bundle.getLanguage()) != null;
     }
     
-    public Bundle getBundle(Language locale) {
-	return bundles.get(locale);
+    public Bundle getBundle(Language language) {
+	return bundles.get(language);
     }
 
     public String getName() {
 	return defaultBundle.getName();
+    }
+
+    public Set<Language> supportedLanguages() {
+	return bundles.keySet();
     }
 
 }

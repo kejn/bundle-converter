@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * Tests for {@link BundleGroup} class.
  * 
  * @author kejn
  */

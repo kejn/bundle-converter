@@ -223,4 +223,8 @@ public enum Language {
 	}
 	return null;
     }
+
+    public String getDisplayLanguage() {
+	return displayLanguage;
+    }
 }

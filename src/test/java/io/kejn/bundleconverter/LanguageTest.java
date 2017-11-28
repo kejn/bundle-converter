@@ -6,6 +6,11 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+/**
+ * Tests for {@link Language} enum.
+ * 
+ * @author kejn
+ */
 public class LanguageTest {
 
     /**
