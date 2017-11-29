@@ -45,3 +45,6 @@ gradle-app.setting
 .classpath
 .project
 .settings/
+
+# Code Climate coverage tool #
+cc-test-reporter

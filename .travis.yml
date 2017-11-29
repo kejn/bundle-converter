@@ -20,6 +20,6 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - ./gradlew check jTR
+  - ./gradlew check
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build -t jacoco -r $CC_TEST_REPORTER_ID --exit-code $TRAVIS_TEST_RESULT
