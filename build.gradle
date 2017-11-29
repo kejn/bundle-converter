@@ -26,6 +26,13 @@ repositories {
     jcenter()
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
 /*
  * Remember to distinguish between 'api' and 'implementation' dependencies
  */

@@ -12,14 +12,8 @@ cache:
 jdk:
   - openjdk8
   - oraclejdk8
-  
-# use the default script actions
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
 script:
-  - ./gradlew check
+  - ./gradlew check jTR
 after_script:
-  - ./cc-test-reporter after-build -t jacoco -r $CC_TEST_REPORTER_ID --exit-code $TRAVIS_TEST_RESULT
+  - bash <(curl -s https://codecov.io/bash)
