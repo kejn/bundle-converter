@@ -1,8 +1,10 @@
 package io.kejn.bundleconverter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -85,7 +87,7 @@ public class BundleGroup {
     }
 
     public boolean contains(Bundle bundle) {
-	return bundles.get(bundle.getLanguage()) != null;
+	return getBundle(bundle.getLanguage()) != null;
     }
     
     public Bundle getBundle(Language language) {
@@ -99,5 +101,21 @@ public class BundleGroup {
     public Set<Language> supportedLanguages() {
 	return bundles.keySet();
     }
-
+    
+    public Set<String> stringPropertyNames() {
+	Properties properties = defaultBundle.getProperties();
+	if(properties == null) {
+	    return Collections.emptySet();
+	}
+	return properties.stringPropertyNames();
+    }
+    
+    public String getProperty(String key, Language language) {
+	Bundle bundle = getBundle(language);
+	if(bundle == null) {
+	    return null;
+	}
+	return bundle.getProperties().getProperty(key);
+    }
+    
 }

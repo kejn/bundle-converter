@@ -37,7 +37,7 @@ jacocoTestReport {
  * Remember to distinguish between 'api' and 'implementation' dependencies
  */
 dependencies {
+    api 'org.apache.poi:poi-ooxml:3.17'
     implementation 'com.google.guava:guava:23.3-jre'
-    implementation 'org.apache.poi:poi-ooxml:3.17'
     testImplementation 'junit:junit:4.12'
 }

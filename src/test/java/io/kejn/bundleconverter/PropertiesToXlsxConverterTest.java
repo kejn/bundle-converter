@@ -1,8 +1,6 @@
 package io.kejn.bundleconverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -59,21 +57,21 @@ public class PropertiesToXlsxConverterTest {
 	assertEquals(1, workbook.getNumberOfSheets());
 
 	Sheet sheet = workbook.getSheet(group.getName());
-	assertNotNull(sheet);
-
-	Row row = sheet.getRow(0);
-	assertNotNull(row);
-
-	assertRowContainsValuesInOrder(row, expectedHeaderContents);
+	assertRowContainsValuesInOrder(sheet, BundleConverter.HEADER_ROW, expectedHeaderContents);
     }
 
-    private void assertRowContainsValuesInOrder(Row row, String... expectedValues) {
+    private void assertRowContainsValuesInOrder(Sheet sheet, int rowNum, String... expectedValues) {
+	assertNotNull(sheet);
+	assertNotNull(expectedValues);
+
+	Row row = sheet.getRow(BundleConverter.HEADER_ROW);
+	assertNotNull(row);
+
 	Iterator<Cell> iterator = row.cellIterator();
 	assertNotNull(iterator);
-	
+
 	int index = 0;
 	while (iterator.hasNext()) {
-
 	    Cell cell = iterator.next();
 	    assertNotNull(cell);
 	    assertEquals(CellType.STRING, cell.getCellTypeEnum());
@@ -84,9 +82,76 @@ public class PropertiesToXlsxConverterTest {
 			    + ". Current cell value: " + cellValue, //
 		    index < expectedValues.length);
 	    assertEquals(expectedValues[index], cell.getStringCellValue());
+
 	    ++index;
 	}
 	assertEquals(expectedValues.length, index);
+    }
+
+    @Test
+    public void sheetShouldContainTranslationsInProperColumns() {
+	// given
+	BundleGroup group = new BundleGroup(defaultBundle, polishBundle);
+	String key1 = "key1";
+	String value1 = defaultBundle.getProperties().getProperty(key1);
+	String value1_pl = polishBundle.getProperties().getProperty(key1);
+	String key2 = "key2";
+	String value2 = defaultBundle.getProperties().getProperty(key2);
+	String value2_pl = polishBundle.getProperties().getProperty(key2);
+
+	// when
+	Workbook workbook = converter.toXlsx(group);
+
+	// then
+	assertNotNull(workbook);
+	assertEquals(1, workbook.getNumberOfSheets());
+
+	Sheet sheet = workbook.getSheet(group.getName());
+	assertNotNull(sheet);
+
+	assertSheetContainsTranslationInColumn(sheet, key1, value1, BundleConverter.DEFAULT_COLUMN);
+	assertSheetContainsTranslationInColumn(sheet, key1, value1_pl, BundleConverter.DEFAULT_COLUMN + 1);
+	assertSheetContainsTranslationInColumn(sheet, key2, value2, BundleConverter.DEFAULT_COLUMN);
+	assertSheetContainsTranslationInColumn(sheet, key2, value2_pl, BundleConverter.DEFAULT_COLUMN + 1);
+    }
+
+    private void assertSheetContainsTranslationInColumn(Sheet sheet, String key, String translation, int column) {
+	assertNotNull(sheet);
+	assertNotNull(key);
+	assertNotNull(translation);
+	assertTrue(column >= 0);
+
+	Iterator<Row> rowIterator = sheet.rowIterator();
+	assertNotNull(rowIterator);
+
+	Row row = null;
+	while (rowIterator.hasNext()) {
+	    row = rowIterator.next();
+
+	    Cell cell = row.getCell(BundleConverter.KEY_COLUMN);
+	    if (cell != null && key.equals(cell.getStringCellValue())) {
+		break;
+	    }
+	    row = null;
+	}
+	assertNotNull(row);
+
+	Iterator<Cell> iterator = row.cellIterator();
+	assertNotNull(iterator);
+
+	boolean found = false;
+	while (iterator.hasNext() && !found) {
+	    Cell cell = iterator.next();
+	    assertNotNull(cell);
+	    assertEquals(CellType.STRING, cell.getCellTypeEnum());
+
+	    String cellValue = cell.getStringCellValue();
+	    if (key.equals(cellValue)) {
+		continue;
+	    }
+	    found = translation.equals(cellValue);
+	}
+	assertTrue(found);
     }
 
 }
