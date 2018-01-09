@@ -38,8 +38,7 @@ public class BundleGroup {
 	Objects.requireNonNull(defaultBundle, "The default Bundle cannot be null");
 
 	if (!defaultBundle.isDefaultBundle()) {
-	    throw new IllegalArgumentException(
-		    "The defaultBundle cannot be a language variant. "
+	    throw new IllegalArgumentException("The defaultBundle cannot be a language variant. "
 		    + "It must be the bundle with the default values, not the translated values");
 	}
 
@@ -89,7 +88,7 @@ public class BundleGroup {
     public boolean contains(Bundle bundle) {
 	return getBundle(bundle.getLanguage()) != null;
     }
-    
+
     public Bundle getBundle(Language language) {
 	return bundles.get(language);
     }
@@ -101,21 +100,26 @@ public class BundleGroup {
     public Set<Language> supportedLanguages() {
 	return bundles.keySet();
     }
-    
+
     public Set<String> stringPropertyNames() {
 	Properties properties = defaultBundle.getProperties();
-	if(properties == null) {
+	if (properties == null) {
 	    return Collections.emptySet();
 	}
 	return properties.stringPropertyNames();
     }
-    
+
     public String getProperty(String key, Language language) {
 	Bundle bundle = getBundle(language);
-	if(bundle == null) {
+	if (bundle == null) {
 	    return null;
 	}
 	return bundle.getProperties().getProperty(key);
     }
-    
+
+    @Override
+    public String toString() {
+	return "BundleGroup [name=" + getName() + ", bundles=" + bundles + "]";
+    }
+
 }

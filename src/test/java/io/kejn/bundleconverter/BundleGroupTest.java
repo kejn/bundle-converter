@@ -5,8 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import io.kejn.bundleconverter.shared.Path;
 
 /**
  * Tests for {@link BundleGroup} class.
@@ -15,9 +20,9 @@ import org.junit.Test;
  */
 public class BundleGroupTest {
 
-    private static final Bundle BUNDLE_DEFAULT = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-    private static final Bundle BUNDLE_POLISH = new Bundle(Const.VALID_FILE_PATH_POLISH_BUNDLE);
-    private static final Bundle VALUES_DEFAULT = new Bundle(Const.VALID_FILE_PATH_DEFAULT_VALUES);
+    private static final Bundle BUNDLE_DEFAULT = new Bundle(Path.DEFAULT_BUNDLE);
+    private static final Bundle BUNDLE_POLISH = new Bundle(Path.POLISH_BUNDLE);
+    private static final Bundle VALUES_DEFAULT = new Bundle(Path.DEFAULT_VALUES);
 
     private BundleGroup group;
 
@@ -129,5 +134,22 @@ public class BundleGroupTest {
 	
 	// then
 	assertEquals(bundle.getName(), group.getName());
+    }
+    
+    
+    @Test
+    public void shouldCreateAListOfAllGroupsInDirectory() {
+	// given
+	File directory = new File(Path.DIR_PATH);
+	assertTrue(directory.exists());
+	assertTrue(directory.isDirectory());
+	
+	// when
+	List<BundleGroup> groups = Bundles.groupsInDirectory(directory);
+	
+	// then
+	assertNotNull(groups);
+	assertEquals(3, groups.size());
+	
     }
 }

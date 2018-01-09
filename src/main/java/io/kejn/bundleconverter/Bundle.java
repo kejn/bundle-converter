@@ -14,10 +14,10 @@ import com.google.common.io.Files;
  * @author kejn
  *
  */
-public class Bundle {
+public class Bundle implements Comparable<Bundle> {
 
-    private static final String FILE_EXTENSION = "properties";
     private static final String UNDERSCORE = "_";
+    private static final int UNDERSCORE_POSITION = 3;
 
     private final File file;
 
@@ -44,7 +44,7 @@ public class Bundle {
      *            extension
      */
     public Bundle(File file) {
-	if (!fileExtensionIsValid(file)) {
+	if (!Bundles.fileExtensionIsValid(file)) {
 	    throw new IllegalArgumentException("Input file should have '.properties' extension");
 	}
 	this.file = file;
@@ -59,13 +59,15 @@ public class Bundle {
     }
 
     public boolean isDefaultBundle() {
-	return !getNameWithVariants().contains(UNDERSCORE);
+	int index = getNameWithVariants().indexOf(UNDERSCORE);
+	int langUnderscoreIndex = getNameWithVariants().length() - UNDERSCORE_POSITION;
+	return index < langUnderscoreIndex;
     }
 
     public Language getLanguage() {
 	String[] nameWithVariants = getNameWithVariants().split(UNDERSCORE);
-	String language = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
-	return Language.forISOCode(language);
+	String isoCode = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
+	return Language.forISOCode(isoCode);
     }
 
     public Properties getProperties() {
@@ -79,14 +81,6 @@ public class Bundle {
 	}
 	return properties;
     }
-    
-    /*
-     * Private methods.
-     */
-
-    private boolean fileExtensionIsValid(File file) {
-	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
-    }
 
     /*
      * Methods overridden from Object.
@@ -94,16 +88,14 @@ public class Bundle {
 
     @Override
     public int hashCode() {
-	return file.getName().hashCode();
+	return getNameWithVariants().hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
 	if (obj instanceof Bundle) {
 	    Bundle other = (Bundle) obj;
-	    if (getNameWithVariants().equals(other.getNameWithVariants())) {
-		return true;
-	    }
+	    return compareTo(other) == 0;
 	}
 	return false;
     }
@@ -111,6 +103,15 @@ public class Bundle {
     @Override
     public String toString() {
 	return "Bundle[" + file + "]";
+    }
+
+    /*
+     * Comparable interface implementation.
+     */
+
+    @Override
+    public int compareTo(Bundle o) {
+	return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithVariants(), o.getNameWithVariants());
     }
 
 }

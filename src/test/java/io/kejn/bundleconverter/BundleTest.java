@@ -7,6 +7,8 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.kejn.bundleconverter.shared.Path;
+
 /**
  * Tests for {@link Bundle} class.
  * 
@@ -36,7 +38,7 @@ public class BundleTest {
     @Test
     public void shouldAcceptOnlyPropertiesFilesValidFilePath() {
 	// when
-	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
+	bundle = new Bundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -62,7 +64,7 @@ public class BundleTest {
     @Test
     public void fileExtensionCheckShouldBeCaseInsensitive() {
 	// given
-	final File validFile = new File(Const.VALID_FILE_PATH_UPPERCASE_BUNDLE);
+	final File validFile = new File(Path.UPPERCASE_BUNDLE);
 
 	// when
 	bundle = new Bundle(validFile);
@@ -85,9 +87,9 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameSameFilesExtensiveHashCodeAndEqualsTest() {
 	// given
-	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-	Bundle bundle3 = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
+	bundle = new Bundle(Path.DEFAULT_BUNDLE);
+	Bundle bundle2 = new Bundle(Path.DEFAULT_BUNDLE);
+	Bundle bundle3 = new Bundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -112,8 +114,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesSameFilename() {
 	// given
-	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE_OTHER_LOCATION);
+	bundle = new Bundle(Path.DEFAULT_BUNDLE);
+	Bundle bundle2 = new Bundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
 
 	// then
 	bundleIsOK();
@@ -130,8 +132,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesDifferentFilename() {
 	// given
-	bundle = new Bundle(Const.VALID_FILE_PATH_DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Const.VALID_FILE_PATH_POLISH_BUNDLE);
+	bundle = new Bundle(Path.DEFAULT_BUNDLE);
+	Bundle bundle2 = new Bundle(Path.POLISH_BUNDLE);
 
 	// then
 	bundleIsOK();

@@ -1,5 +1,8 @@
-package io.kejn.bundleconverter;
+package io.kejn.bundleconverter.converter;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -10,30 +13,57 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class BundleConverter {
+import io.kejn.bundleconverter.BundleGroup;
+import io.kejn.bundleconverter.Language;
 
+public class XlsxConverter {
+
+    private static final int COLUMN_WIDTH = 11000;
     private static final short FONT_SIZE = 10;
     private static final String FONT_NAME = "Arial";
-    
+
     public static final int HEADER_ROW = 0;
-    private static final int CONTENT_FIRST_ROW = 1;
+    public static final int CONTENT_FIRST_ROW = 1;
 
     public static final int KEY_COLUMN = 0;
     public static final int DEFAULT_COLUMN = 1;
 
     public static final String KEY_LABEL = "Key";
 
-    public Workbook toXlsx(BundleGroup group) {
+    /*
+     * API.
+     */
+
+    public Workbook toXlsx(BundleGroup... bundleGroups) {
+	return toXlsx(Arrays.asList(bundleGroups));
+    }
+    
+    public Workbook toXlsx(List<BundleGroup> bundleGroups) {
 	Workbook workbook = new XSSFWorkbook();
+	for (BundleGroup group : bundleGroups) {
+	    Objects.requireNonNull(group, "The BundleGroup list contain null value");
+	    createSheet(workbook, group);
+	}
+	return workbook;
+    }
+
+    public void createSheet(Workbook workbook, BundleGroup group) {
 	Sheet sheet = workbook.createSheet(group.getName());
 
 	createHeader(sheet, group);
 	createTranslations(sheet, group);
 
-	return workbook;
+	setAutoFilter(sheet, group);
+	sheet.createFreezePane(KEY_COLUMN, DEFAULT_COLUMN);
+	setWidthForAllColumns(sheet, group);
     }
+
+    /*
+     * Private methods.
+     */
 
     private void createHeader(Sheet sheet, BundleGroup group) {
 	CellStyle cellStyle = getHeaderCellStyle(sheet.getWorkbook());
@@ -73,18 +103,17 @@ public class BundleConverter {
 	    ++colIndex;
 	}
     }
-    
+
     private void createCellWithStyle(Row row, int cellIndex, CellStyle cellStyle, String value) {
 	Cell cell = row.createCell(cellIndex);
 	cell.setCellStyle(cellStyle);
 	cell.setCellValue(value);
-	cell.getStringCellValue();
     }
 
     private CellStyle getHeaderCellStyle(Workbook workbook) {
 	Font font = createFont(workbook);
 	font.setBold(true);
-	
+
 	CellStyle cellStyle = getContentCellStyle(workbook);
 	cellStyle.setFont(font);
 	return cellStyle;
@@ -104,6 +133,18 @@ public class BundleConverter {
 	font.setFontName(FONT_NAME);
 	font.setFontHeightInPoints(FONT_SIZE);
 	return font;
+    }
+
+    private void setAutoFilter(Sheet sheet, BundleGroup group) {
+	int maxRows = group.getDefaultBundle().getProperties().size();
+	int maxCols = group.supportedLanguages().size();
+	sheet.setAutoFilter(new CellRangeAddress(HEADER_ROW, maxRows, KEY_COLUMN, maxCols));
+    }
+
+    private void setWidthForAllColumns(Sheet sheet, BundleGroup group) {
+	for (int colIndex = 0; colIndex <= group.size(); ++colIndex) {
+	    sheet.setColumnWidth(colIndex, COLUMN_WIDTH);
+	}
     }
 
 }
