@@ -227,4 +227,8 @@ public enum Language {
     public String getDisplayLanguage() {
 	return displayLanguage;
     }
+
+    public String getIsoCode() {
+	return isoCode;
+    }
 }

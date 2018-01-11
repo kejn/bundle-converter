@@ -1,5 +1,7 @@
 package io.kejn.bundleconverter;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,10 @@ public class BundleGroup {
      *             <b>defaultBundle</b>
      */
     public BundleGroup(Bundle defaultBundle, Bundle... otherBundleVariants) {
+	this(defaultBundle, Arrays.asList(otherBundleVariants));
+    }
+
+    public BundleGroup(Bundle defaultBundle, Collection<Bundle> otherBundleVariants) {
 	Objects.requireNonNull(defaultBundle, "The default Bundle cannot be null");
 
 	if (!defaultBundle.isDefaultBundle()) {
@@ -44,10 +50,7 @@ public class BundleGroup {
 
 	this.defaultBundle = defaultBundle;
 	add(defaultBundle);
-
-	for (Bundle b : Objects.requireNonNull(otherBundleVariants)) {
-	    add(b);
-	}
+	addAll(otherBundleVariants);
     }
 
     private void checkBundle(Bundle bundle) {
@@ -74,6 +77,17 @@ public class BundleGroup {
 	return bundles.put(bundle.getLanguage(), bundle) == null;
     }
 
+    public boolean addAll(Collection<Bundle> bundles) {
+	Objects.requireNonNull(bundles, "Bundles cannot be null");
+
+	boolean addedSomething = false;
+	for (Bundle b : bundles) {
+	    addedSomething = add(b);
+	}
+	return addedSomething;
+
+    }
+
     /**
      * @return the default {@link Bundle}
      */
@@ -86,7 +100,7 @@ public class BundleGroup {
     }
 
     public boolean contains(Bundle bundle) {
-	return getBundle(bundle.getLanguage()) != null;
+	return getName().equals(bundle.getName()) && getBundle(bundle.getLanguage()) != null;
     }
 
     public Bundle getBundle(Language language) {

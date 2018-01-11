@@ -1,8 +1,12 @@
 package io.kejn.bundleconverter.converter;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -16,7 +20,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import io.kejn.bundleconverter.Bundle;
 import io.kejn.bundleconverter.BundleGroup;
+import io.kejn.bundleconverter.Bundles;
 import io.kejn.bundleconverter.Language;
 
 public class XlsxConverter {
@@ -40,7 +46,7 @@ public class XlsxConverter {
     public Workbook toXlsx(BundleGroup... bundleGroups) {
 	return toXlsx(Arrays.asList(bundleGroups));
     }
-    
+
     public Workbook toXlsx(List<BundleGroup> bundleGroups) {
 	Workbook workbook = new XSSFWorkbook();
 	for (BundleGroup group : bundleGroups) {
@@ -61,11 +67,7 @@ public class XlsxConverter {
 	setWidthForAllColumns(sheet, group);
     }
 
-    /*
-     * Private methods.
-     */
-
-    private void createHeader(Sheet sheet, BundleGroup group) {
+    public void createHeader(Sheet sheet, BundleGroup group) {
 	CellStyle cellStyle = getHeaderCellStyle(sheet.getWorkbook());
 	String defaultValue = Language.DEFAULT.getDisplayLanguage();
 
@@ -74,7 +76,7 @@ public class XlsxConverter {
 	});
     }
 
-    private void createTranslations(Sheet sheet, BundleGroup group) {
+    public void createTranslations(Sheet sheet, BundleGroup group) {
 	CellStyle cellStyle = getContentCellStyle(sheet.getWorkbook());
 
 	int rowIndex = CONTENT_FIRST_ROW;
@@ -86,6 +88,62 @@ public class XlsxConverter {
 	    ++rowIndex;
 	}
     }
+
+    public List<BundleGroup> toBundleGroupList(Workbook workbook, File outputDirectory) {
+	List<BundleGroup> groups = new ArrayList<>();
+
+	Iterator<Sheet> iterator = workbook.sheetIterator();
+	while (iterator.hasNext()) {
+	    groups.add(toBundleGroup(iterator.next(), outputDirectory));
+	}
+	return groups;
+    }
+
+    public BundleGroup toBundleGroup(Sheet sheet, File outputDirectory) {
+	Row firstRow = sheet.rowIterator().next();
+	Iterator<Cell> cellIterator = firstRow.cellIterator();
+	// skip the column with keys
+	cellIterator.next();
+
+	Bundle defaultBundle = null;
+	List<Bundle> bundleVariants = new ArrayList<>();
+
+	for (int index = DEFAULT_COLUMN; cellIterator.hasNext(); ++index) {
+	    Language language = Language.forDisplayLanguage(cellIterator.next().getStringCellValue());
+
+	    Properties properties = sheetColumnToProperties(sheet, index);
+	    String bundlePath = Bundles.createFileName(outputDirectory, sheet.getSheetName(), language);
+	    Bundle bundle = new Bundle(bundlePath, properties);
+	    if (bundle.isDefaultBundle()) {
+		defaultBundle = bundle;
+	    } else {
+		bundleVariants.add(bundle);
+	    }
+	}
+	if (defaultBundle == null) {
+	    throw new IllegalStateException("Sheet is missing the Default translation.");
+	}
+	return new BundleGroup(defaultBundle, bundleVariants);
+    }
+
+    public Properties sheetColumnToProperties(Sheet sheet, int indexOfColumnwithTranslation) {
+	Iterator<Row> rowIterator = sheet.rowIterator();
+	// skip the table header
+	rowIterator.next();
+
+	Properties propertiesToGenerate = new Properties();
+
+	while (rowIterator.hasNext()) {
+	    Row row = (Row) rowIterator.next();
+	    propertiesToGenerate.setProperty(row.getCell(KEY_COLUMN).getStringCellValue(),
+		    row.getCell(indexOfColumnwithTranslation).getStringCellValue());
+	}
+	return propertiesToGenerate;
+    }
+
+    /*
+     * Private methods.
+     */
 
     private void createRow(BundleGroup group, Sheet sheet, int rowIndex, CellStyle cellStyle, String key,
 	    String defaultValue, Function<Language, String> valueConverter) {

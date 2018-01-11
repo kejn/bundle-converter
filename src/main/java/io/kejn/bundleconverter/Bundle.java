@@ -50,6 +50,11 @@ public class Bundle implements Comparable<Bundle> {
 	this.file = file;
     }
 
+    public Bundle(String filePath, Properties properties) {
+	this(filePath);
+	setProperties(properties);
+    }
+
     public String getName() {
 	return getNameWithVariants().split(UNDERSCORE)[0];
     }
@@ -80,6 +85,14 @@ public class Bundle implements Comparable<Bundle> {
 	    }
 	}
 	return properties;
+    }
+
+    /*
+     * Private methods.
+     */
+
+    private void setProperties(Properties properties) {
+	this.properties = properties;
     }
 
     /*

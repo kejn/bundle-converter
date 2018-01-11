@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -26,10 +27,41 @@ public final class Bundles {
      * Checks if the {@link Bundle}'s file extension is valid.
      * 
      * @param file the properties file to check
-     * @return <code>true</code> if file extension equals (ignore case) {@link #FILE_EXTENSION}.
+     * @return <code>true</code> if file extension equals (ignore case)
+     *         {@link #FILE_EXTENSION}.
      */
     public static boolean fileExtensionIsValid(File file) {
+	Objects.requireNonNull(file);
 	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
+    }
+
+    public static String createFileName(File directory, String bundleName, Language language) {
+	Objects.requireNonNull(directory);
+	Objects.requireNonNull(bundleName);
+	Objects.requireNonNull(language);
+
+	if (!isExistingDirectory(directory)) {
+	    throw new IllegalArgumentException("This file doesn't exist or it is not a directory: " + directory);
+	}
+	if (bundleName.trim().isEmpty()) {
+	    throw new IllegalArgumentException("Bundle name cannot be empty");
+	}
+
+	StringBuilder sb = new StringBuilder();
+	sb.append(directory.getAbsolutePath());
+	sb.append(File.separator);
+	sb.append(bundleName);
+	if (Language.DEFAULT != language) {
+	    sb.append("_");
+	    sb.append(language.getIsoCode());
+	}
+	sb.append(".");
+	sb.append(FILE_EXTENSION);
+	return sb.toString();
+    }
+
+    private static boolean isExistingDirectory(File directory) {
+	return directory.exists() && directory.isDirectory();
     }
 
     /**
@@ -40,7 +72,9 @@ public final class Bundles {
      * @return the list of all {@link Bundle}s found
      */
     public static List<Bundle> bundlesInDirectory(File directory) {
-	if (!directory.exists() || !directory.isDirectory()) {
+	Objects.requireNonNull(directory);
+
+	if (!isExistingDirectory(directory)) {
 	    return Collections.emptyList();
 	}
 
@@ -61,6 +95,8 @@ public final class Bundles {
      * @return the list of all {@link BundleGroup}s found
      */
     public static List<BundleGroup> groupsInDirectory(File directory) {
+	Objects.requireNonNull(directory);
+
 	List<Bundle> bundles = bundlesInDirectory(directory);
 
 	Map<String, Set<Bundle>> groupsMap = new TreeMap<>();
@@ -73,7 +109,7 @@ public final class Bundles {
 	    }
 	    set.add(bundle);
 	}
-	
+
 	List<BundleGroup> groups = new ArrayList<>();
 	for (Set<Bundle> set : groupsMap.values()) {
 	    BundleGroup group = null;

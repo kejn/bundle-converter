@@ -1,17 +1,24 @@
 package io.kejn.bundleconverter.converter;
 
-import static io.kejn.bundleconverter.converter.XlsxAssertionHelper.assertSheetContainsTranslationInColumn;
+import static io.kejn.bundleconverter.converter.AssertionHelper.assertSheetContainsTranslationInColumn;
+import static io.kejn.bundleconverter.converter.AssertionHelper.verifyBundle;
+import static io.kejn.bundleconverter.converter.AssertionHelper.verifyGroup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
 import io.kejn.bundleconverter.Bundle;
@@ -19,7 +26,7 @@ import io.kejn.bundleconverter.BundleGroup;
 import io.kejn.bundleconverter.Language;
 import io.kejn.bundleconverter.shared.Path;
 
-public class PropertiesToXlsxConverterTest {
+public class XlsxConverterTest {
 
     private final XlsxConverter converter = new XlsxConverter();
 
@@ -178,4 +185,64 @@ public class PropertiesToXlsxConverterTest {
 		XlsxConverter.DEFAULT_COLUMN + 1);
     }
 
+    @Test
+    public void shouldCreateBundleForEachLanguage() throws IOException {
+	// given
+	File directory = new File(Path.DIR_PATH);
+	BundleGroup group = new BundleGroup(defaultBundle, polishBundle);
+	Workbook workbook = dummyWorkbook(Arrays.asList(group));
+
+	// when
+	List<BundleGroup> result = converter.toBundleGroupList(workbook, directory);
+
+	// then
+	assertNotNull(result);
+	assertEquals(1, result.size());
+
+	BundleGroup resultGroup = result.get(0);
+	verifyGroup(group, resultGroup);
+
+	verifyBundle(defaultBundle, resultGroup.getBundle(Language.DEFAULT));
+	verifyBundle(polishBundle, resultGroup.getBundle(Language.POLISH));
+    }
+
+
+
+    private Workbook dummyWorkbook(List<BundleGroup> groups) {
+	Workbook workbook = new XSSFWorkbook();
+	for (BundleGroup group : groups) {
+	    Sheet sheet = workbook.createSheet(group.getName());
+	    converter.createHeader(sheet, group);
+	    converter.createTranslations(sheet, group);
+	}
+	return workbook;
+    }
+
+    @Test
+    public void shouldCreateBundleGroupForEachSheet() {
+	// given
+	File directory = new File(Path.DIR_PATH);
+	BundleGroup groupBundle = new BundleGroup(defaultBundle, polishBundle);
+	BundleGroup groupValues = new BundleGroup(defaultValues, germanValues);
+	Workbook workbook = dummyWorkbook(Arrays.asList(groupBundle, groupValues));
+
+	// when
+	List<BundleGroup> result = converter.toBundleGroupList(workbook, directory);
+
+	// then
+	assertNotNull(result);
+	assertEquals(2, result.size());
+
+	BundleGroup resultGroupBundle = result.get(0);
+	verifyGroup(groupBundle, resultGroupBundle);
+
+	verifyBundle(defaultBundle, resultGroupBundle.getBundle(Language.DEFAULT));
+	verifyBundle(polishBundle, resultGroupBundle.getBundle(Language.POLISH));
+
+	BundleGroup resultGroupValues = result.get(1);
+	verifyGroup(groupValues, resultGroupValues);
+
+	verifyBundle(defaultValues, resultGroupValues.getBundle(Language.DEFAULT));
+	verifyBundle(germanValues, resultGroupValues.getBundle(Language.GERMAN));
+    }
 }
