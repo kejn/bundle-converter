@@ -1,11 +1,22 @@
 package io.kejn.bundleconverter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import io.kejn.bundleconverter.shared.Path;
 
@@ -17,6 +28,9 @@ import io.kejn.bundleconverter.shared.Path;
 public class BundleTest {
 
     private Bundle bundle;
+
+    @Rule
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Before
     public void setUp() {
@@ -142,4 +156,56 @@ public class BundleTest {
 	assertNotEquals(bundle, bundle2);
     }
     
+    @Test
+    public void canSavePropertiesToFile() throws IOException {
+        // given
+        final String key = "key";
+        final String value = "value";
+        final File file = folder.newFile("tempBundle.properties");
+        final Properties properties = new Properties();
+        properties.setProperty(key, value);
+        bundle = new Bundle(file.getPath(), properties);
+
+        // when
+        bundle.saveToFile();
+        final Properties actualProperties = new Properties();
+        actualProperties.load(new FileInputStream(file));
+
+        // then
+        final String actualValue = actualProperties.getProperty(key);
+        assertNotNull(value, actualValue);
+        assertEquals(value, actualValue);
+    }
+
+    @Test
+    public void canSavePropertiesToFileUsingOtherFileAsTemplate() throws IOException {
+        // given
+        final File templateFile = new File(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
+        final Bundle templateBundle = new Bundle(templateFile);
+        final BufferedReader templateReader = new BufferedReader(new FileReader(templateFile));
+
+        final File targetFile = folder.newFile("tempBundle.properties");
+        final Properties properties = templateBundle.getProperties();
+        bundle = new Bundle(targetFile.getPath(), properties);
+        final BufferedReader targetReader = new BufferedReader(new FileReader(targetFile));
+
+        // when
+        bundle.saveToFile(templateFile);
+
+        // then
+        String templateLine = null;
+        String targetLine = null;
+        boolean testFailed = false;
+        while ((templateLine = templateReader.readLine()) != null) {
+            targetLine = targetReader.readLine();
+            if (targetLine == null || !templateLine.equals(targetLine)) {
+                testFailed = true;
+                break;
+            }
+        }
+        templateReader.close();
+        targetReader.close();
+        assertFalse(String.format("Assertion failed. templateLine(%s) != targetLine(%s)", templateLine, targetLine),
+                testFailed);
+    }
 }
