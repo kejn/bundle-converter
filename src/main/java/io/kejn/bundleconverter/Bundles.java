@@ -35,6 +35,10 @@ public final class Bundles {
 	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
     }
 
+    public static File createFile(File directory, String bundleName, Language language) {
+        return new File(createFileName(directory, bundleName, language));
+    }
+
     public static String createFileName(File directory, String bundleName, Language language) {
 	Objects.requireNonNull(directory);
 	Objects.requireNonNull(bundleName);

@@ -30,11 +30,11 @@ public class XlsxConverterTest {
 
     private final XlsxConverter converter = new XlsxConverter();
 
-    private final Bundle defaultBundle = new Bundle(Path.DEFAULT_BUNDLE);
-    private final Bundle polishBundle = new Bundle(Path.POLISH_BUNDLE);
+    private final Bundle defaultBundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+    private final Bundle polishBundle = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
 
-    private final Bundle defaultValues = new Bundle(Path.DEFAULT_VALUES);
-    private final Bundle germanValues = new Bundle(Path.GERMAN_VALUES);
+    private final Bundle defaultValues = Bundle.newExistingBundle(Path.DEFAULT_VALUES);
+    private final Bundle germanValues = Bundle.newExistingBundle(Path.GERMAN_VALUES);
 
     /**
      * There should be created a sheet with name equal to {@link BundleGroup} name.

@@ -52,7 +52,7 @@ public class BundleTest {
     @Test
     public void shouldAcceptOnlyPropertiesFilesValidFilePath() {
 	// when
-	bundle = new Bundle(Path.DEFAULT_BUNDLE);
+        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -99,11 +99,11 @@ public class BundleTest {
      * @see Object#equals(Object)
      */
     @Test
-    public void bundlesAreDistinguishedByFilenameSameFilesExtensiveHashCodeAndEqualsTest() {
+    public void bundlesAreDistinguishedByFilenameSameFilesExtensiveHashCodeAndEqualsAndComparableTest() {
 	// given
-	bundle = new Bundle(Path.DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Path.DEFAULT_BUNDLE);
-	Bundle bundle3 = new Bundle(Path.DEFAULT_BUNDLE);
+        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle3 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -118,6 +118,14 @@ public class BundleTest {
 	assertTrue("Equals method is not transitive",
 		bundle.equals(bundle3) && bundle2.equals(bundle3) && bundle.equals(bundle3));
 	assertFalse("Comparision with null should return false", bundle.equals(null));
+
+        assertEquals("CompareTo method is not reflexive", 0, bundle.compareTo(bundle));
+        assertTrue("CompareTo method is not symmetric", bundle.compareTo(bundle2) == 0 && bundle2.compareTo(
+                bundle) == 0);
+        assertTrue("CompareTo method is not transitive", bundle.compareTo(bundle3) == 0 && bundle2.compareTo(
+                bundle3) == 0 && bundle.compareTo(bundle3) == 0);
+        assertEquals("Comparision with null should return -1", -1, bundle.compareTo(null));
+
     }
 
     /**
@@ -128,8 +136,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesSameFilename() {
 	// given
-	bundle = new Bundle(Path.DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
+        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
 
 	// then
 	bundleIsOK();
@@ -146,8 +154,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesDifferentFilename() {
 	// given
-	bundle = new Bundle(Path.DEFAULT_BUNDLE);
-	Bundle bundle2 = new Bundle(Path.POLISH_BUNDLE);
+        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -164,7 +172,7 @@ public class BundleTest {
         final File file = folder.newFile("tempBundle.properties");
         final Properties properties = new Properties();
         properties.setProperty(key, value);
-        bundle = new Bundle(file.getPath(), properties);
+        bundle = Bundle.newNotExistingBundle(file.getPath(), properties);
 
         // when
         bundle.saveToFile();
@@ -186,7 +194,7 @@ public class BundleTest {
 
         final File targetFile = folder.newFile("tempBundle.properties");
         final Properties properties = templateBundle.getProperties();
-        bundle = new Bundle(targetFile.getPath(), properties);
+        bundle = Bundle.newNotExistingBundle(targetFile.getPath(), properties);
         final BufferedReader targetReader = new BufferedReader(new FileReader(targetFile));
 
         // when

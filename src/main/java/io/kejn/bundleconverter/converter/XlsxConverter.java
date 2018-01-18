@@ -44,10 +44,13 @@ public class XlsxConverter {
      */
 
     public Workbook toXlsx(BundleGroup... bundleGroups) {
+        Objects.requireNonNull(bundleGroups);
 	return toXlsx(Arrays.asList(bundleGroups));
     }
 
     public Workbook toXlsx(List<BundleGroup> bundleGroups) {
+        Objects.requireNonNull(bundleGroups);
+
 	Workbook workbook = new XSSFWorkbook();
 	for (BundleGroup group : bundleGroups) {
 	    Objects.requireNonNull(group, "The BundleGroup list contain null value");
@@ -57,7 +60,10 @@ public class XlsxConverter {
     }
 
     public void createSheet(Workbook workbook, BundleGroup group) {
-	Sheet sheet = workbook.createSheet(group.getName());
+        Objects.requireNonNull(workbook);
+        Objects.requireNonNull(group);
+
+        Sheet sheet = workbook.createSheet(group.getName());
 
 	createHeader(sheet, group);
 	createTranslations(sheet, group);
@@ -68,7 +74,10 @@ public class XlsxConverter {
     }
 
     public void createHeader(Sheet sheet, BundleGroup group) {
-	CellStyle cellStyle = getHeaderCellStyle(sheet.getWorkbook());
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(group);
+
+        CellStyle cellStyle = getHeaderCellStyle(sheet.getWorkbook());
 	String defaultValue = Language.DEFAULT.getDisplayLanguage();
 
 	createRow(group, sheet, HEADER_ROW, cellStyle, KEY_LABEL, defaultValue, language -> {
@@ -77,6 +86,9 @@ public class XlsxConverter {
     }
 
     public void createTranslations(Sheet sheet, BundleGroup group) {
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(group);
+
 	CellStyle cellStyle = getContentCellStyle(sheet.getWorkbook());
 
 	int rowIndex = CONTENT_FIRST_ROW;
@@ -90,6 +102,9 @@ public class XlsxConverter {
     }
 
     public List<BundleGroup> toBundleGroupList(Workbook workbook, File outputDirectory) {
+        Objects.requireNonNull(workbook);
+        Objects.requireNonNull(outputDirectory);
+
 	List<BundleGroup> groups = new ArrayList<>();
 
 	Iterator<Sheet> iterator = workbook.sheetIterator();
@@ -100,7 +115,10 @@ public class XlsxConverter {
     }
 
     public BundleGroup toBundleGroup(Sheet sheet, File outputDirectory) {
-	Row firstRow = sheet.rowIterator().next();
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(outputDirectory);
+
+        Row firstRow = sheet.rowIterator().next();
 	Iterator<Cell> cellIterator = firstRow.cellIterator();
 	// skip the column with keys
 	cellIterator.next();
@@ -109,11 +127,16 @@ public class XlsxConverter {
 	List<Bundle> bundleVariants = new ArrayList<>();
 
 	for (int index = DEFAULT_COLUMN; cellIterator.hasNext(); ++index) {
-	    Language language = Language.forDisplayLanguage(cellIterator.next().getStringCellValue());
+            String stringCellValue = cellIterator.next().getStringCellValue();
+            Language language = Language.forDisplayLanguage(stringCellValue);
+            if (language == null) {
+                throw new IllegalStateException("Sheet contains unknown language: [" + stringCellValue
+                        + "]. Languages supported by API: " + Language.listSupportedLanguages());
+            }
 
 	    Properties properties = sheetColumnToProperties(sheet, index);
 	    String bundlePath = Bundles.createFileName(outputDirectory, sheet.getSheetName(), language);
-	    Bundle bundle = new Bundle(bundlePath, properties);
+            Bundle bundle = Bundle.newNotExistingBundle(bundlePath, properties);
 	    if (bundle.isDefaultBundle()) {
 		defaultBundle = bundle;
 	    } else {
@@ -127,6 +150,8 @@ public class XlsxConverter {
     }
 
     public Properties sheetColumnToProperties(Sheet sheet, int indexOfColumnwithTranslation) {
+        Objects.requireNonNull(sheet);
+
 	Iterator<Row> rowIterator = sheet.rowIterator();
 	// skip the table header
 	rowIterator.next();

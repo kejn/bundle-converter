@@ -40,5 +40,7 @@ dependencies {
     api 'org.apache.poi:poi-ooxml:3.17'
     implementation 'org.apache.commons:commons-text:1.2'
     implementation 'com.google.guava:guava:23.3-jre'
+    
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.13.0'
 }

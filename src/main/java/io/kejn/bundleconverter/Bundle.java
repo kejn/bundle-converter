@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -36,14 +35,20 @@ public class Bundle implements Comparable<Bundle> {
      * API.
      */
 
-    /**
-     * Creates a new {@link Bundle} object using the specified path to the
-     * properties file.
-     * 
-     * @param filePath the path to the file with '.properties' extension
-     */
-    public Bundle(String filePath) {
-        this(new File(filePath));
+    public static Bundle newExistingBundle(String filePath) {
+        return new Bundle(new File(filePath));
+    }
+
+    public static Bundle newExistingBundle(File file) {
+        return new Bundle(file);
+    }
+
+    public static Bundle newNotExistingBundle(String filePath, Properties properties) {
+        return new Bundle(new File(filePath), properties);
+    }
+
+    public static Bundle newNotExistingBundle(File file, Properties properties) {
+        return new Bundle(file, properties);
     }
 
     /**
@@ -59,8 +64,8 @@ public class Bundle implements Comparable<Bundle> {
         this.file = file;
     }
 
-    public Bundle(String filePath, Properties properties) {
-        this(filePath);
+    public Bundle(File file, Properties properties) {
+        this(file);
         setProperties(properties);
     }
 
@@ -97,7 +102,10 @@ public class Bundle implements Comparable<Bundle> {
     }
 
     public void saveToFile(File templateFile) throws IOException {
-        Objects.requireNonNull(properties);
+        getProperties();
+        if (properties == null) {
+            throw new IllegalStateException("The Bundle points to a file which is not a .properties file");
+        }
 
         FileWriter writer = new FileWriter(file);
         writer.write(formatProperties(templateFile));
@@ -191,6 +199,9 @@ public class Bundle implements Comparable<Bundle> {
 
     @Override
     public int compareTo(Bundle o) {
+        if (o == null) {
+            return -1;
+        }
         return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithVariants(), o.getNameWithVariants());
     }
 

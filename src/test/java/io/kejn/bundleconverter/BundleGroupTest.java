@@ -4,8 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Before;
@@ -20,9 +26,9 @@ import io.kejn.bundleconverter.shared.Path;
  */
 public class BundleGroupTest {
 
-    private static final Bundle BUNDLE_DEFAULT = new Bundle(Path.DEFAULT_BUNDLE);
-    private static final Bundle BUNDLE_POLISH = new Bundle(Path.POLISH_BUNDLE);
-    private static final Bundle VALUES_DEFAULT = new Bundle(Path.DEFAULT_VALUES);
+    private static final Bundle BUNDLE_DEFAULT = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+    private static final Bundle BUNDLE_POLISH = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
+    private static final Bundle VALUES_DEFAULT = Bundle.newExistingBundle(Path.DEFAULT_VALUES);
 
     private BundleGroup group;
 
@@ -150,6 +156,40 @@ public class BundleGroupTest {
 	// then
 	assertNotNull(groups);
 	assertEquals(3, groups.size());
-	
+    }
+
+    @Test
+    public void shoudldSaveAllBundlesInGroupToPropertiesFiles() throws IOException {
+        // given
+        Bundle defaultSpy = spy(BUNDLE_DEFAULT);
+        Bundle polishSpy = spy(BUNDLE_POLISH);
+        BundleGroup group = new BundleGroup(defaultSpy, polishSpy);
+        
+        // when
+        doNothing().when(defaultSpy).saveToFile(isNull());
+        doNothing().when(polishSpy).saveToFile(isNull());
+
+        group.saveGroupAsPropertiesFiles();
+
+        verify(defaultSpy).saveToFile(isNull());
+        verify(polishSpy).saveToFile(isNull());
+    }
+
+    @Test
+    public void shoudldSaveAllBundlesInGroupToPropertiesFilesUsingTemplate() throws IOException {
+        // given
+        Bundle defaultSpy = spy(BUNDLE_DEFAULT);
+        Bundle polishSpy = spy(BUNDLE_POLISH);
+        BundleGroup group = new BundleGroup(defaultSpy, polishSpy);
+        File templateFile = new File("bundle_es.properties");
+
+        // when
+        doNothing().when(defaultSpy).saveToFile(any(File.class));
+        doNothing().when(polishSpy).saveToFile(any(File.class));
+
+        group.saveGroupAsPropertiesFiles(templateFile);
+
+        verify(defaultSpy).saveToFile(any(File.class));
+        verify(polishSpy).saveToFile(any(File.class));
     }
 }

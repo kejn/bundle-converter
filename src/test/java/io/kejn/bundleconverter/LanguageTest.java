@@ -25,7 +25,7 @@ public class LanguageTest {
 	// then
 	for (final String isoCode : localeISOLangs) {
 	    Language language = Language.forISOCode(isoCode);
-	    assertNotNull(String.format("ISO code '%s' is not supported", isoCode), language);
+            assertNotNull(String.format("ISO code '%s' is not supported", isoCode), language);
 	}
     }
 

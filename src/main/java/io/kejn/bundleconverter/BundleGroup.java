@@ -1,5 +1,7 @@
 package io.kejn.bundleconverter;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,9 +133,19 @@ public class BundleGroup {
 	return bundle.getProperties().getProperty(key);
     }
 
+    public void saveGroupAsPropertiesFiles() throws IOException {
+        saveGroupAsPropertiesFiles(null);
+    }
+
+    public void saveGroupAsPropertiesFiles(File templateFile) throws IOException {
+        for (Language language : supportedLanguages()) {
+            bundles.get(language).saveToFile(templateFile);
+        }
+    }
+
     @Override
     public String toString() {
-	return "BundleGroup [name=" + getName() + ", bundles=" + bundles + "]";
+        return "BundleGroup [name=" + getName() + ", bundles=" + bundles + "]";
     }
 
 }

@@ -1,5 +1,8 @@
 package io.kejn.bundleconverter;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * The convenient mappings of ISO codes and display languages generated from
  * {@link java.util.Locale}.
@@ -230,5 +233,9 @@ public enum Language {
 
     public String getIsoCode() {
 	return isoCode;
+    }
+
+    public static String listSupportedLanguages() {
+        return Arrays.stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
     }
 }
