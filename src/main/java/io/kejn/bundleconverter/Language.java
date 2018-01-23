@@ -209,6 +209,13 @@ public enum Language {
 	this.displayLanguage = displayLanguage;
     }
 
+    /**
+     * Returns a {@link Language} matching given ISO code.
+     * 
+     * @param isoCode the ISO code
+     * @return a language matching given ISO code or <tt>null</tt> if no matching
+     *         language could be found
+     */
     public static Language forISOCode(String isoCode) {
 	for (Language language : values()) {
 	    if (language.isoCode.equals(isoCode)) {
@@ -218,6 +225,13 @@ public enum Language {
 	return null;
     }
 
+    /**
+     * Returns a {@link Language} matching given display language.
+     * 
+     * @param displayLanguage the display language
+     * @return a language matching given display language or <tt>null</tt> if no
+     *         matching language could be found
+     */
     public static Language forDisplayLanguage(String displayLanguage) {
 	for (Language language : values()) {
 	    if (language.displayLanguage.equals(displayLanguage)) {
@@ -225,6 +239,13 @@ public enum Language {
 	    }
 	}
 	return null;
+    }
+
+    /**
+     * @return the list of all {@link Language}s defined in this enum
+     */
+    public static String listSupportedLanguages() {
+        return Arrays.stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
     }
 
     public String getDisplayLanguage() {
@@ -235,7 +256,4 @@ public enum Language {
 	return isoCode;
     }
 
-    public static String listSupportedLanguages() {
-        return Arrays.stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
-    }
 }

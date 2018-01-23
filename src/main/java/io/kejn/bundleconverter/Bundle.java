@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -14,11 +15,76 @@ import org.apache.commons.text.StringEscapeUtils;
 import com.google.common.io.Files;
 
 /**
- * Represents a file with {@value #FILE_EXTENSION} extension. It is
- * distinguished by file name.
+ * Represents a file with '.properties' extension. It is distinguished by the
+ * file name.
+ * <p>
+ * It uses alpha-2 ISO-code suffix in a file name, to determine the
+ * {@link Language} of the translation. For example, "bundle.properties" will be
+ * detected as a "default" bundle, but "bundle_es.properties" will as a Spanish
+ * translation of some "bundle.properties" file. Different translations of the
+ * same bundle can be wrapped and managed using the {@link BundleGroup} object.
+ * <p>
+ * The Bundle object can be created in two ways:
+ * <ol>
+ * <li>Using an existing File, from which the Properties can be later lazily
+ * loaded. This should be used, when you need to use some properties from given
+ * file in application runtime.<br>
+ * <li>Using a specified File, to which you can later save the Properties, and
+ * the specified Properties object. This should be used, when you want to easily
+ * write to file the properties that you created at application runtime.
+ * </ol>
+ * Some helpful methods for {@link Bundle} creation could be also found in
+ * {@link Bundles} class.
+ * <p>
+ * <b><u>EXAMPLES</u></b>
+ * <p>
+ * GETTING PROPERTIES USING AN EXISTING FILE
+ * <hr>
+ * <blockquote>
+ * 
+ * <pre>
+ * File file = new File("path/to/file.properties");
+ * Bundle bundle = new Bundle(file);
+ * Properties prop = bundle.getProperties();
+ * </pre>
+ * 
+ * </blockquote>
+ * <p>
+ * SAVING PROPERTIES CREATED AT RUNTIME TO A NEW FILE
+ * <hr>
+ * <blockquote>
+ * 
+ * <pre>
+ * Properties prop = new Properties();
+ * prop.setProperty("key1", "value1");
+ * [...]
+ * File file = new File("path/to/new/file.properties");
+ * Bundle bundle = new Bundle(file, prop);
+ * bundle.saveToFile();
+ * </pre>
+ * 
+ * </blockquote>
+ * <p>
+ * UPDATING OR ADDING NEW PROPERTIES USING AN EXISTING FILE
+ * <hr>
+ * <blockquote>
+ * 
+ * <pre>
+ * File file = new File("path/to/file.properties");
+ * Bundle bundle = new Bundle(file);
+ * Properties prop = bundle.getProperties();
+ * prop.setProperties("old.key", "updated value");
+ * prop.setProperties("new.key", "new value");
+ * [...]
+ * bundle.saveToFile(); // warning! you will overwrite the old file here!
+ * </pre>
+ * 
+ * </blockquote>
  * 
  * @author kejn
- *
+ * @see Bundles
+ * @see Language
+ * @see BundleGroup
  */
 public class Bundle implements Comparable<Bundle> {
 
@@ -35,27 +101,14 @@ public class Bundle implements Comparable<Bundle> {
      * API.
      */
 
-    public static Bundle newExistingBundle(String filePath) {
-        return new Bundle(new File(filePath));
-    }
-
-    public static Bundle newExistingBundle(File file) {
-        return new Bundle(file);
-    }
-
-    public static Bundle newNotExistingBundle(String filePath, Properties properties) {
-        return new Bundle(new File(filePath), properties);
-    }
-
-    public static Bundle newNotExistingBundle(File file, Properties properties) {
-        return new Bundle(file, properties);
-    }
-
     /**
-     * Creates a new {@link Bundle} object using the specified {@link File} object.
+     * Creates a new {@link Bundle} object using the properties from the specified
+     * <b>file</b>.
      * 
-     * @param file the file object that should hold a file with the '.properties'
-     *            extension
+     * @param file the file that should have the '.properties' extension
+     * 
+     * @throws IllegalArgumentException if the <b>file</b> does not have the
+     *             '.properties' extension
      */
     public Bundle(File file) {
         if (!Bundles.fileExtensionIsValid(file)) {
@@ -64,31 +117,79 @@ public class Bundle implements Comparable<Bundle> {
         this.file = file;
     }
 
+    /**
+     * Creates a new {@link Bundle} with a handle to given <b>file</b> using the
+     * provided <b>properties</b>.
+     * 
+     * @param file the file that should have the '.properties' extension
+     * @param properties CANNOT BE NULL; the initial properties values
+     * 
+     * @throws IllegalArgumentException if the <b>file</b> does not have the
+     *             '.properties' extension
+     * @throws NullPointerException if the <b>properties</b> argument is null
+     */
     public Bundle(File file, Properties properties) {
         this(file);
-        setProperties(properties);
+        setProperties(Objects.requireNonNull(properties));
     }
 
+    /**
+     * Returns the name of this bundle without the language ISO code. For example,
+     * if the file name of the {@link #file} is "bundle_es.properties", then this
+     * method will return only "bundle" (the file extension and the language ISO
+     * code is skipped).
+     * 
+     * @return the name of this bundle without the extension and language ISO code.
+     * 
+     * @see #getNameWithLanguageVariant()
+     */
     public String getName() {
-        return getNameWithVariants().split(UNDERSCORE)[0];
+        return getNameWithLanguageVariant().split(UNDERSCORE)[0];
     }
 
-    public String getNameWithVariants() {
+    /**
+     * Returns the name of this bundle including the language ISO code. It is simply
+     * the file name without extension. For example, if the file name of the
+     * {@link #file} is "bundle_es.properties", then this method will return only
+     * "bundle_es" (the file extension is skipped).
+     * 
+     * @return the name of this bundle including the language ISO code
+     */
+    public String getNameWithLanguageVariant() {
         return Files.getNameWithoutExtension(file.getName());
     }
 
+    /**
+     * Checks if this object is a "default" language variant of given bundle.
+     * 
+     * @return <code>true</code> if this is a "default" language variant of given
+     *         bundle
+     * 
+     * @see #getLanguage()
+     */
     public boolean isDefaultBundle() {
-        int index = getNameWithVariants().indexOf(UNDERSCORE);
-        int langUnderscoreIndex = getNameWithVariants().length() - UNDERSCORE_POSITION;
+        int index = getNameWithLanguageVariant().indexOf(UNDERSCORE);
+        int langUnderscoreIndex = getNameWithLanguageVariant().length() - UNDERSCORE_POSITION;
         return index < langUnderscoreIndex;
     }
 
+    /**
+     * @return the {@link Language} of this bundle using the ISO code in the
+     *         {@link #file} name.
+     */
     public Language getLanguage() {
-        String[] nameWithVariants = getNameWithVariants().split(UNDERSCORE);
+        String[] nameWithVariants = getNameWithLanguageVariant().split(UNDERSCORE);
         String isoCode = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
         return Language.forISOCode(isoCode);
     }
 
+    /**
+     * Return the {@link #properties} of this bundle. It attempts to load the
+     * properties from {@link #file} if they were not loaded yet (or initialized
+     * with a proper constructor).
+     * 
+     * @return the {@link #properties} of this bundle (CAN BE NULL)
+     */
     public Properties getProperties() {
         if (properties == null && file.exists()) {
             try {
@@ -101,10 +202,27 @@ public class Bundle implements Comparable<Bundle> {
         return properties;
     }
 
+    /**
+     * Saves to {@link #file} the {@link #properties} of this object matching
+     * property keys specified in <b>templateFile</b> and using its file structure.
+     * It preserves the comments and keys order.<br>
+     * <br>
+     * <b>Note:</b> If the {@link #properties} contain some keys not included in the
+     * <b>templateFile</b>, then the result file will be missing these extra
+     * properties.
+     * 
+     * @param templateFile the template file
+     * 
+     * @throws IllegalStateException if the {@link #file} points to a file, which is
+     *             not a '.properties' file.
+     * @throws IOException if the {@link #file} exists but is a directory rather
+     *             than a regular file, does not exist but cannot be created, or
+     *             cannot be opened for any other reason
+     */
     public void saveToFile(File templateFile) throws IOException {
         getProperties();
         if (properties == null) {
-            throw new IllegalStateException("The Bundle points to a file which is not a .properties file");
+            throw new IllegalStateException("The Bundle points to a file which is not a '.properties' file");
         }
 
         FileWriter writer = new FileWriter(file);
@@ -112,6 +230,15 @@ public class Bundle implements Comparable<Bundle> {
         writer.close();
     }
 
+    /**
+     * Saves all {@link #properties} of this object to {@link #file}.
+     * 
+     * @throws IllegalStateException if the {@link #file} points to a file, which is
+     *             not a '.properties' file.
+     * @throws IOException if the {@link #file} exists but is a directory rather
+     *             than a regular file, does not exist but cannot be created, or
+     *             cannot be opened for any other reason
+     */
     public void saveToFile() throws IOException {
         saveToFile(null);
     }
@@ -176,7 +303,7 @@ public class Bundle implements Comparable<Bundle> {
 
     @Override
     public int hashCode() {
-        return getNameWithVariants().hashCode();
+        return getNameWithLanguageVariant().hashCode();
     }
 
     @Override
@@ -202,7 +329,7 @@ public class Bundle implements Comparable<Bundle> {
         if (o == null) {
             return -1;
         }
-        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithVariants(), o.getNameWithVariants());
+        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithLanguageVariant(), o.getNameWithLanguageVariant());
     }
 
 }

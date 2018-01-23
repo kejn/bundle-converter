@@ -26,9 +26,9 @@ import io.kejn.bundleconverter.shared.Path;
  */
 public class BundleGroupTest {
 
-    private static final Bundle BUNDLE_DEFAULT = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-    private static final Bundle BUNDLE_POLISH = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
-    private static final Bundle VALUES_DEFAULT = Bundle.newExistingBundle(Path.DEFAULT_VALUES);
+    private static final Bundle BUNDLE_DEFAULT = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+    private static final Bundle BUNDLE_POLISH = Bundles.newExistingBundle(Path.POLISH_BUNDLE);
+    private static final Bundle VALUES_DEFAULT = Bundles.newExistingBundle(Path.DEFAULT_VALUES);
 
     private BundleGroup group;
 
@@ -54,7 +54,7 @@ public class BundleGroupTest {
     @Test
     public void addingExistingBundleDoesNotOverwriteAnOldOne() {
 	// when
-	final boolean addedToGroup = group.add(BUNDLE_DEFAULT);
+        final boolean addedToGroup = group.put(BUNDLE_DEFAULT);
 
 	// then
 	assertFalse(addedToGroup);
@@ -68,7 +68,7 @@ public class BundleGroupTest {
     @Test
     public void canAddMultipleBundlesToOneGroup() {
 	// when
-	final boolean addedToGroup = group.add(BUNDLE_POLISH);
+        final boolean addedToGroup = group.put(BUNDLE_POLISH);
 
 	// then
 	assertTrue(addedToGroup);
@@ -101,7 +101,7 @@ public class BundleGroupTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectToAddDifferentBundles() {
 	// when
-	group.add(VALUES_DEFAULT);
+        group.put(VALUES_DEFAULT);
     }
 
     /**
@@ -123,7 +123,7 @@ public class BundleGroupTest {
     public void canGetBundleByLocale() {
 	// given
 	final Language polish = Language.POLISH;
-	group.add(BUNDLE_POLISH);
+        group.put(BUNDLE_POLISH);
 
 	// when
 	final Bundle bundle = group.getBundle(polish);

@@ -136,7 +136,7 @@ public class XlsxConverter {
 
 	    Properties properties = sheetColumnToProperties(sheet, index);
 	    String bundlePath = Bundles.createFileName(outputDirectory, sheet.getSheetName(), language);
-            Bundle bundle = Bundle.newNotExistingBundle(bundlePath, properties);
+            Bundle bundle = Bundles.newNotExistingBundle(bundlePath, properties);
 	    if (bundle.isDefaultBundle()) {
 		defaultBundle = bundle;
 	    } else {

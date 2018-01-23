@@ -52,7 +52,7 @@ public class BundleTest {
     @Test
     public void shouldAcceptOnlyPropertiesFilesValidFilePath() {
 	// when
-        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -101,9 +101,9 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameSameFilesExtensiveHashCodeAndEqualsAndComparableTest() {
 	// given
-        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-        Bundle bundle2 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-        Bundle bundle3 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle3 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -136,8 +136,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesSameFilename() {
 	// given
-        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-        Bundle bundle2 = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
 
 	// then
 	bundleIsOK();
@@ -154,8 +154,8 @@ public class BundleTest {
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesDifferentFilename() {
 	// given
-        bundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-        Bundle bundle2 = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundles.newExistingBundle(Path.POLISH_BUNDLE);
 
 	// then
 	bundleIsOK();
@@ -172,7 +172,7 @@ public class BundleTest {
         final File file = folder.newFile("tempBundle.properties");
         final Properties properties = new Properties();
         properties.setProperty(key, value);
-        bundle = Bundle.newNotExistingBundle(file.getPath(), properties);
+        bundle = Bundles.newNotExistingBundle(file.getPath(), properties);
 
         // when
         bundle.saveToFile();
@@ -194,7 +194,7 @@ public class BundleTest {
 
         final File targetFile = folder.newFile("tempBundle.properties");
         final Properties properties = templateBundle.getProperties();
-        bundle = Bundle.newNotExistingBundle(targetFile.getPath(), properties);
+        bundle = Bundles.newNotExistingBundle(targetFile.getPath(), properties);
         final BufferedReader targetReader = new BufferedReader(new FileReader(targetFile));
 
         // when

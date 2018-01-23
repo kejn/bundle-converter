@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import io.kejn.bundleconverter.Bundle;
 import io.kejn.bundleconverter.BundleGroup;
+import io.kejn.bundleconverter.Bundles;
 import io.kejn.bundleconverter.Language;
 import io.kejn.bundleconverter.shared.Path;
 
@@ -30,11 +31,11 @@ public class XlsxConverterTest {
 
     private final XlsxConverter converter = new XlsxConverter();
 
-    private final Bundle defaultBundle = Bundle.newExistingBundle(Path.DEFAULT_BUNDLE);
-    private final Bundle polishBundle = Bundle.newExistingBundle(Path.POLISH_BUNDLE);
+    private final Bundle defaultBundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+    private final Bundle polishBundle = Bundles.newExistingBundle(Path.POLISH_BUNDLE);
 
-    private final Bundle defaultValues = Bundle.newExistingBundle(Path.DEFAULT_VALUES);
-    private final Bundle germanValues = Bundle.newExistingBundle(Path.GERMAN_VALUES);
+    private final Bundle defaultValues = Bundles.newExistingBundle(Path.DEFAULT_VALUES);
+    private final Bundle germanValues = Bundles.newExistingBundle(Path.GERMAN_VALUES);
 
     /**
      * There should be created a sheet with name equal to {@link BundleGroup} name.
