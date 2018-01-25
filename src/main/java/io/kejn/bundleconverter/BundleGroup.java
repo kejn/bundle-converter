@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A group of {@link Bundle} objects that refer to the same properties, but in
@@ -54,7 +55,7 @@ public class BundleGroup {
      *             <b>defaultBundle</b>
      */
     public BundleGroup(Bundle defaultBundle, Bundle... otherBundleVariants) {
-	this(defaultBundle, Arrays.asList(otherBundleVariants));
+        this(defaultBundle, Arrays.asList(otherBundleVariants));
     }
 
     /**
@@ -76,16 +77,16 @@ public class BundleGroup {
      *             <b>defaultBundle</b>
      */
     public BundleGroup(Bundle defaultBundle, Collection<Bundle> otherBundleVariants) {
-	Objects.requireNonNull(defaultBundle, "The default Bundle cannot be null");
+        Objects.requireNonNull(defaultBundle, "The default Bundle cannot be null");
 
-	if (!defaultBundle.isDefaultBundle()) {
-	    throw new IllegalArgumentException("The defaultBundle cannot be a language variant. "
-		    + "It must be the bundle with the default values, not the translated values");
-	}
+        if (!defaultBundle.isDefaultBundle()) {
+            throw new IllegalArgumentException("The defaultBundle cannot be a language variant. "
+                    + "It must be the bundle with the default values, not the translated values");
+        }
 
-	this.defaultBundle = defaultBundle;
+        this.defaultBundle = defaultBundle;
         put(defaultBundle);
-	putAll(otherBundleVariants);
+        putAll(otherBundleVariants);
     }
 
     /**
@@ -100,8 +101,8 @@ public class BundleGroup {
      *             <b>defaultBundle</b>
      */
     public boolean put(Bundle bundle) {
-	checkBundle(bundle);
-	return bundles.put(bundle.getLanguage(), bundle) == null;
+        checkBundle(bundle);
+        return bundles.put(bundle.getLanguage(), bundle) == null;
     }
 
     /**
@@ -119,15 +120,15 @@ public class BundleGroup {
      *             bundle than <b>defaultBundle</b>
      */
     public boolean putAll(Collection<Bundle> bundles) {
-	Objects.requireNonNull(bundles, "Bundles cannot be null");
+        Objects.requireNonNull(bundles, "Bundles cannot be null");
 
-	boolean addedSomething = false;
-	for (Bundle b : bundles) {
+        boolean addedSomething = false;
+        for (Bundle b : bundles) {
             if (put(b)) {
                 addedSomething = true;
             }
-	}
-	return addedSomething;
+        }
+        return addedSomething;
 
     }
 
@@ -135,14 +136,14 @@ public class BundleGroup {
      * @return the {@link #defaultBundle}
      */
     public Bundle getDefaultBundle() {
-	return defaultBundle;
+        return defaultBundle;
     }
 
     /**
      * @return number of bundles in this group
      */
     public int size() {
-	return bundles.size();
+        return bundles.size();
     }
 
     /**
@@ -153,7 +154,7 @@ public class BundleGroup {
      *         <tt>false</tt> otherwise
      */
     public boolean contains(Bundle bundle) {
-	return getName().equals(bundle.getName()) && getBundle(bundle.getLanguage()) != null;
+        return getName().equals(bundle.getName()) && getBundle(bundle.getLanguage()) != null;
     }
 
     /**
@@ -164,7 +165,7 @@ public class BundleGroup {
      *         <b>language</b>
      */
     public Bundle getBundle(Language language) {
-	return bundles.get(language);
+        return bundles.get(language);
     }
 
     /**
@@ -174,25 +175,41 @@ public class BundleGroup {
      * @return the name of this group
      */
     public String getName() {
-	return defaultBundle.getName();
+        return defaultBundle.getName();
     }
 
     /**
+     * Return the set of all supported languages in this group.
+     * 
      * @return set of {@link Language}s of all bundles in this group
      */
     public Set<Language> supportedLanguages() {
-	return bundles.keySet();
+        return bundles.keySet();
     }
 
     /**
+     * Return the set of all supported languages in this group, excluding the
+     * {@link Language#DEFAULT} language.
+     * 
+     * @return set of {@link Language}s of all bundles in this group excluding the
+     *         {@link Language#DEFAULT} language
+     */
+    public Set<Language> supportedLanguagesWithoutDefault() {
+        return bundles.keySet().stream().filter(lang -> !Language.DEFAULT.equals(lang)).collect(
+                Collectors.toSet());
+    }
+
+    /**
+     * Return the set of all keys that the {@link #defaultBundle} contains.
+     * 
      * @return set of property keys that the {@link #defaultBundle} contains
      */
     public Set<String> stringPropertyNames() {
-	Properties properties = defaultBundle.getProperties();
-	if (properties == null) {
-	    return Collections.emptySet();
-	}
-	return properties.stringPropertyNames();
+        Properties properties = defaultBundle.getProperties();
+        if (properties == null) {
+            return Collections.emptySet();
+        }
+        return properties.stringPropertyNames();
     }
 
     /**
@@ -212,10 +229,10 @@ public class BundleGroup {
      * @return the property value from given <b>key</b> from the bundle matching
      */
     public String getProperty(String key, Language language) {
-	Bundle bundle = getBundle(language);
-	if (bundle == null) {
-	    return null;
-	}
+        Bundle bundle = getBundle(language);
+        if (bundle == null) {
+            return null;
+        }
         Properties prop = bundle.getProperties();
         if (prop == null) {
             return null;

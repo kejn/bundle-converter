@@ -34,7 +34,7 @@ public class BundleGroupTest {
 
     @Before
     public void setUp() {
-	group = new BundleGroup(BUNDLE_DEFAULT);
+        group = new BundleGroup(BUNDLE_DEFAULT);
     }
 
     /**
@@ -44,7 +44,7 @@ public class BundleGroupTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void defaultBundleCannotBeABundleVariant() {
-	new BundleGroup(BUNDLE_POLISH);
+        new BundleGroup(BUNDLE_POLISH);
     }
 
     /**
@@ -53,13 +53,13 @@ public class BundleGroupTest {
      */
     @Test
     public void addingExistingBundleDoesNotOverwriteAnOldOne() {
-	// when
+        // when
         final boolean addedToGroup = group.put(BUNDLE_DEFAULT);
 
-	// then
-	assertFalse(addedToGroup);
-	assertNotNull(group.getDefaultBundle());
-	assertEquals(1, group.size());
+        // then
+        assertFalse(addedToGroup);
+        assertNotNull(group.getDefaultBundle());
+        assertEquals(1, group.size());
     }
 
     /**
@@ -67,12 +67,12 @@ public class BundleGroupTest {
      */
     @Test
     public void canAddMultipleBundlesToOneGroup() {
-	// when
+        // when
         final boolean addedToGroup = group.put(BUNDLE_POLISH);
 
-	// then
-	assertTrue(addedToGroup);
-	assertEquals(2, group.size());
+        // then
+        assertTrue(addedToGroup);
+        assertEquals(2, group.size());
     }
 
     /**
@@ -86,7 +86,7 @@ public class BundleGroupTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectToCreateWithDifferentBundles() {
-	new BundleGroup(BUNDLE_DEFAULT, VALUES_DEFAULT);
+        new BundleGroup(BUNDLE_DEFAULT, VALUES_DEFAULT);
     }
 
     /**
@@ -100,7 +100,7 @@ public class BundleGroupTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectToAddDifferentBundles() {
-	// when
+        // when
         group.put(VALUES_DEFAULT);
     }
 
@@ -109,11 +109,11 @@ public class BundleGroupTest {
      */
     @Test
     public void canGetDefaultBundle() {
-	// when
-	final Bundle bundle = group.getDefaultBundle();
+        // when
+        final Bundle bundle = group.getDefaultBundle();
 
-	// then
-	assertEquals(BUNDLE_DEFAULT, bundle);
+        // then
+        assertEquals(BUNDLE_DEFAULT, bundle);
     }
 
     /**
@@ -121,41 +121,40 @@ public class BundleGroupTest {
      */
     @Test
     public void canGetBundleByLocale() {
-	// given
-	final Language polish = Language.POLISH;
+        // given
+        final Language polish = Language.POLISH;
         group.put(BUNDLE_POLISH);
 
-	// when
-	final Bundle bundle = group.getBundle(polish);
+        // when
+        final Bundle bundle = group.getBundle(polish);
 
-	// then
-	assertEquals(BUNDLE_POLISH, bundle);
-	assertEquals(2, group.size());
+        // then
+        assertEquals(BUNDLE_POLISH, bundle);
+        assertEquals(2, group.size());
     }
-    
+
     @Test
     public void shouldHaveTheSameNameAsTheDefaultBundle() {
-	// when
-	final Bundle bundle = group.getDefaultBundle();
-	
-	// then
-	assertEquals(bundle.getName(), group.getName());
+        // when
+        final Bundle bundle = group.getDefaultBundle();
+
+        // then
+        assertEquals(bundle.getName(), group.getName());
     }
-    
-    
+
     @Test
     public void shouldCreateAListOfAllGroupsInDirectory() {
-	// given
-	File directory = new File(Path.DIR_PATH);
-	assertTrue(directory.exists());
-	assertTrue(directory.isDirectory());
-	
-	// when
-	List<BundleGroup> groups = Bundles.groupsInDirectory(directory);
-	
-	// then
-	assertNotNull(groups);
-	assertEquals(3, groups.size());
+        // given
+        File directory = new File(Path.DIR_PATH);
+        assertTrue(directory.exists());
+        assertTrue(directory.isDirectory());
+
+        // when
+        List<BundleGroup> groups = Bundles.groupsInDirectory(directory);
+
+        // then
+        assertNotNull(groups);
+        assertEquals(3, groups.size());
     }
 
     @Test
@@ -164,7 +163,7 @@ public class BundleGroupTest {
         Bundle defaultSpy = spy(BUNDLE_DEFAULT);
         Bundle polishSpy = spy(BUNDLE_POLISH);
         BundleGroup group = new BundleGroup(defaultSpy, polishSpy);
-        
+
         // when
         doNothing().when(defaultSpy).saveToFile(isNull());
         doNothing().when(polishSpy).saveToFile(isNull());

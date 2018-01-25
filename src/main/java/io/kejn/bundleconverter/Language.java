@@ -1,6 +1,7 @@
 package io.kejn.bundleconverter;
 
-import java.util.Arrays;
+import static java.util.Arrays.stream;
+
 import java.util.stream.Collectors;
 
 /**
@@ -205,8 +206,8 @@ public enum Language {
     private final String displayLanguage;
 
     private Language(String isoCode, String displayLanguage) {
-	this.isoCode = isoCode;
-	this.displayLanguage = displayLanguage;
+        this.isoCode = isoCode;
+        this.displayLanguage = displayLanguage;
     }
 
     /**
@@ -217,12 +218,12 @@ public enum Language {
      *         language could be found
      */
     public static Language forISOCode(String isoCode) {
-	for (Language language : values()) {
-	    if (language.isoCode.equals(isoCode)) {
-		return language;
-	    }
-	}
-	return null;
+        for (Language language : values()) {
+            if (language.isoCode.equals(isoCode)) {
+                return language;
+            }
+        }
+        return null;
     }
 
     /**
@@ -233,27 +234,27 @@ public enum Language {
      *         matching language could be found
      */
     public static Language forDisplayLanguage(String displayLanguage) {
-	for (Language language : values()) {
-	    if (language.displayLanguage.equals(displayLanguage)) {
-		return language;
-	    }
-	}
-	return null;
+        for (Language language : values()) {
+            if (language.displayLanguage.equalsIgnoreCase(displayLanguage)) {
+                return language;
+            }
+        }
+        return null;
     }
 
     /**
      * @return the list of all {@link Language}s defined in this enum
      */
     public static String listSupportedLanguages() {
-        return Arrays.stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
+        return stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
     }
 
     public String getDisplayLanguage() {
-	return displayLanguage;
+        return displayLanguage;
     }
 
     public String getIsoCode() {
-	return isoCode;
+        return isoCode;
     }
 
 }

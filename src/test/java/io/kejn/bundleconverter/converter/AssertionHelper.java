@@ -16,7 +16,8 @@ import io.kejn.bundleconverter.Bundle;
 import io.kejn.bundleconverter.BundleGroup;
 
 class AssertionHelper {
-    public static void assertSheetContainsTranslationInColumn(Sheet sheet, String key, String translation, int column) {
+    public static void assertSheetContainsTranslationInColumn(Sheet sheet, String key,
+            String translation, int column) {
         assertNotNull(sheet);
         assertNotNull(key);
         assertNotNull(translation);

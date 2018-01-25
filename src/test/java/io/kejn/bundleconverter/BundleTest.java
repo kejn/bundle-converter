@@ -34,16 +34,16 @@ public class BundleTest {
 
     @Before
     public void setUp() {
-	bundle = null;
+        bundle = null;
     }
 
     private void bundleIsOK() {
-	bundleIsOK(bundle);
+        bundleIsOK(bundle);
     }
-    
+
     private void bundleIsOK(Bundle bundle) {
-	assertNotNull(bundle);
-	assertNotNull(bundle.getProperties());
+        assertNotNull(bundle);
+        assertNotNull(bundle.getProperties());
     }
 
     /**
@@ -51,11 +51,11 @@ public class BundleTest {
      */
     @Test
     public void shouldAcceptOnlyPropertiesFilesValidFilePath() {
-	// when
+        // when
         bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
 
-	// then
-	bundleIsOK();
+        // then
+        bundleIsOK();
     }
 
     /**
@@ -63,11 +63,11 @@ public class BundleTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void shouldAcceptOnlyPropertiesFilesInvalidFileName() {
-	// given
-	final File invalidFile = new File("bundle.propertY");
+        // given
+        final File invalidFile = new File("bundle.propertY");
 
-	// when
-	bundle = new Bundle(invalidFile);
+        // when
+        bundle = new Bundle(invalidFile);
     }
 
     /**
@@ -77,14 +77,14 @@ public class BundleTest {
      */
     @Test
     public void fileExtensionCheckShouldBeCaseInsensitive() {
-	// given
-	final File validFile = new File(Path.UPPERCASE_BUNDLE);
+        // given
+        final File validFile = new File(Path.UPPERCASE_BUNDLE);
 
-	// when
-	bundle = new Bundle(validFile);
+        // when
+        bundle = new Bundle(validFile);
 
-	// then
-	bundleIsOK();
+        // then
+        bundleIsOK();
     }
 
     /**
@@ -99,31 +99,34 @@ public class BundleTest {
      * @see Object#equals(Object)
      */
     @Test
-    public void bundlesAreDistinguishedByFilenameSameFilesExtensiveHashCodeAndEqualsAndComparableTest() {
-	// given
+    public void bundlesAreDistinguishedByFilenameSameFilesHashCodeAndEqualsAndComparableTest() {
+        // given
         bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
         Bundle bundle2 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
         Bundle bundle3 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
 
-	// then
-	bundleIsOK();
-	bundleIsOK(bundle2);
-	bundleIsOK(bundle3);
-	
-	assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle2.hashCode());
-	assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle3.hashCode());
+        // then
+        bundleIsOK();
+        bundleIsOK(bundle2);
+        bundleIsOK(bundle3);
 
-	assertTrue("Equals method is not reflexive", bundle.equals(bundle));
-	assertTrue("Equals method is not symmetric", bundle.equals(bundle2) && bundle2.equals(bundle));
-	assertTrue("Equals method is not transitive",
-		bundle.equals(bundle3) && bundle2.equals(bundle3) && bundle.equals(bundle3));
-	assertFalse("Comparision with null should return false", bundle.equals(null));
+        assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle2
+                .hashCode());
+        assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle3
+                .hashCode());
+
+        assertTrue("Equals method is not reflexive", bundle.equals(bundle));
+        assertTrue("Equals method is not symmetric", bundle.equals(bundle2) && bundle2.equals(
+                bundle));
+        assertTrue("Equals method is not transitive", bundle.equals(bundle3) && bundle2.equals(
+                bundle3) && bundle.equals(bundle3));
+        assertFalse("Comparision with null should return false", bundle.equals(null));
 
         assertEquals("CompareTo method is not reflexive", 0, bundle.compareTo(bundle));
-        assertTrue("CompareTo method is not symmetric", bundle.compareTo(bundle2) == 0 && bundle2.compareTo(
-                bundle) == 0);
-        assertTrue("CompareTo method is not transitive", bundle.compareTo(bundle3) == 0 && bundle2.compareTo(
-                bundle3) == 0 && bundle.compareTo(bundle3) == 0);
+        assertTrue("CompareTo method is not symmetric", bundle.compareTo(bundle2) == 0 && bundle2
+                .compareTo(bundle) == 0);
+        assertTrue("CompareTo method is not transitive", bundle.compareTo(bundle3) == 0 && bundle2
+                .compareTo(bundle3) == 0 && bundle.compareTo(bundle3) == 0);
         assertEquals("Comparision with null should return -1", -1, bundle.compareTo(null));
 
     }
@@ -135,15 +138,15 @@ public class BundleTest {
      */
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesSameFilename() {
-	// given
+        // given
         bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
         Bundle bundle2 = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE_OTHER_LOCATION);
 
-	// then
-	bundleIsOK();
-	bundleIsOK(bundle2);
-	assertEquals(bundle.hashCode(), bundle2.hashCode());
-	assertEquals(bundle, bundle2);
+        // then
+        bundleIsOK();
+        bundleIsOK(bundle2);
+        assertEquals(bundle.hashCode(), bundle2.hashCode());
+        assertEquals(bundle, bundle2);
     }
 
     /**
@@ -153,17 +156,17 @@ public class BundleTest {
      */
     @Test
     public void bundlesAreDistinguishedByFilenameDifferentFilesDifferentFilename() {
-	// given
+        // given
         bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
         Bundle bundle2 = Bundles.newExistingBundle(Path.POLISH_BUNDLE);
 
-	// then
-	bundleIsOK();
-	bundleIsOK(bundle2);
-	assertNotEquals(bundle.hashCode(), bundle2.hashCode());
-	assertNotEquals(bundle, bundle2);
+        // then
+        bundleIsOK();
+        bundleIsOK(bundle2);
+        assertNotEquals(bundle.hashCode(), bundle2.hashCode());
+        assertNotEquals(bundle, bundle2);
     }
-    
+
     @Test
     public void canSavePropertiesToFile() throws IOException {
         // given
@@ -213,7 +216,7 @@ public class BundleTest {
         }
         templateReader.close();
         targetReader.close();
-        assertFalse(String.format("Assertion failed. templateLine(%s) != targetLine(%s)", templateLine, targetLine),
-                testFailed);
+        assertFalse(String.format("Assertion failed. templateLine(%s) != targetLine(%s)",
+                templateLine, targetLine), testFailed);
     }
 }

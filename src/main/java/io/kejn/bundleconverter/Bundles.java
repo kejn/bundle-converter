@@ -34,8 +34,8 @@ public final class Bundles {
      *         {@link #FILE_EXTENSION}.
      */
     public static boolean fileExtensionIsValid(File file) {
-	Objects.requireNonNull(file);
-	return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
+        Objects.requireNonNull(file);
+        return Files.getFileExtension(file.getName()).equalsIgnoreCase(FILE_EXTENSION);
     }
 
     /**
@@ -67,32 +67,33 @@ public final class Bundles {
      *         when creating the {@link Bundle}
      */
     public static String createFileName(File directory, String bundleName, Language language) {
-	Objects.requireNonNull(directory);
-	Objects.requireNonNull(bundleName);
-	Objects.requireNonNull(language);
+        Objects.requireNonNull(directory);
+        Objects.requireNonNull(bundleName);
+        Objects.requireNonNull(language);
 
-	if (!isExistingDirectory(directory)) {
-	    throw new IllegalArgumentException("This file doesn't exist or it is not a directory: " + directory);
-	}
-	if (bundleName.trim().isEmpty()) {
-	    throw new IllegalArgumentException("Bundle name cannot be empty");
-	}
+        if (!isExistingDirectory(directory)) {
+            throw new IllegalArgumentException("This file doesn't exist or it is not a directory: "
+                    + directory);
+        }
+        if (bundleName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Bundle name cannot be empty");
+        }
 
-	StringBuilder sb = new StringBuilder();
-	sb.append(directory.getAbsolutePath());
-	sb.append(File.separator);
-	sb.append(bundleName);
-	if (Language.DEFAULT != language) {
-	    sb.append("_");
-	    sb.append(language.getIsoCode());
-	}
-	sb.append(".");
-	sb.append(FILE_EXTENSION);
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(directory.getAbsolutePath());
+        sb.append(File.separator);
+        sb.append(bundleName);
+        if (Language.DEFAULT != language) {
+            sb.append("_");
+            sb.append(language.getIsoCode());
+        }
+        sb.append(".");
+        sb.append(FILE_EXTENSION);
+        return sb.toString();
     }
 
     private static boolean isExistingDirectory(File directory) {
-	return directory.exists() && directory.isDirectory();
+        return directory.exists() && directory.isDirectory();
     }
 
     /**
@@ -103,19 +104,19 @@ public final class Bundles {
      * @return the list of all {@link Bundle}s found
      */
     public static List<Bundle> bundlesInDirectory(File directory) {
-	Objects.requireNonNull(directory);
+        Objects.requireNonNull(directory);
 
-	if (!isExistingDirectory(directory)) {
-	    return Collections.emptyList();
-	}
+        if (!isExistingDirectory(directory)) {
+            return Collections.emptyList();
+        }
 
-	List<String> bundleNames = Arrays.asList(directory.list((dir, name) -> {
-	    File f = new File(dir, name);
-	    return !f.isDirectory() && fileExtensionIsValid(f);
-	}));
+        List<String> bundleNames = Arrays.asList(directory.list((dir, name) -> {
+            File f = new File(dir, name);
+            return !f.isDirectory() && fileExtensionIsValid(f);
+        }));
 
-	return bundleNames.stream().map(bundleName -> new Bundle(new File(directory, bundleName)))
-		.collect(Collectors.toList());
+        return bundleNames.stream().map(bundleName -> new Bundle(new File(directory, bundleName)))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -126,18 +127,18 @@ public final class Bundles {
      * @return the list of all {@link BundleGroup}s found
      */
     public static List<BundleGroup> groupsInDirectory(File directory) {
-	Objects.requireNonNull(directory);
+        Objects.requireNonNull(directory);
 
         List<BundleGroup> groups = new ArrayList<>();
 
-	List<Bundle> bundles = bundlesInDirectory(directory);
+        List<Bundle> bundles = bundlesInDirectory(directory);
         Map<String, Set<Bundle>> groupsMap = listToGroupsMap(bundles);
 
-	for (Set<Bundle> set : groupsMap.values()) {
+        for (Set<Bundle> set : groupsMap.values()) {
             BundleGroup group = newBundleGroup(set);
             groups.add(group);
-	}
-	return groups;
+        }
+        return groups;
     }
 
     private static Map<String, Set<Bundle>> listToGroupsMap(List<Bundle> bundles) {
@@ -146,8 +147,8 @@ public final class Bundles {
             String name = bundle.getName();
             Set<Bundle> set = groupsMap.get(name);
             if (set == null) {
-        	set = new TreeSet<>();
-        	groupsMap.put(name, set);
+                set = new TreeSet<>();
+                groupsMap.put(name, set);
             }
             set.add(bundle);
         }

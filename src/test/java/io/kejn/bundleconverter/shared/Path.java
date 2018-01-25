@@ -15,7 +15,8 @@ public final class Path {
     public static final String DEFAULT_BUNDLE = format("%s/bundle.properties", DIR_PATH);
     public static final String POLISH_BUNDLE = format("%s/bundle_pl.properties", DIR_PATH);
 
-    public static final String DEFAULT_BUNDLE_OTHER_LOCATION = format("%s/otherlocation/bundle.properties", DIR_PATH);
+    public static final String DEFAULT_BUNDLE_OTHER_LOCATION = format(
+            "%s/otherlocation/bundle.properties", DIR_PATH);
 
     public static final String DEFAULT_VALUES = format("%s/values.properties", DIR_PATH);
     public static final String GERMAN_VALUES = format("%s/values_de.properties", DIR_PATH);

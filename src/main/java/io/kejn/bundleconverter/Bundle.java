@@ -222,7 +222,8 @@ public class Bundle implements Comparable<Bundle> {
     public void saveToFile(File templateFile) throws IOException {
         getProperties();
         if (properties == null) {
-            throw new IllegalStateException("The Bundle points to a file which is not a '.properties' file");
+            throw new IllegalStateException(
+                    "The Bundle points to a file which is not a '.properties' file");
         }
 
         FileWriter writer = new FileWriter(file);
@@ -329,7 +330,8 @@ public class Bundle implements Comparable<Bundle> {
         if (o == null) {
             return -1;
         }
-        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithLanguageVariant(), o.getNameWithLanguageVariant());
+        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithLanguageVariant(), o
+                .getNameWithLanguageVariant());
     }
 
 }
