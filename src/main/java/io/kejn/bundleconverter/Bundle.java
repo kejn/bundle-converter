@@ -6,13 +6,16 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import com.google.common.io.Files;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Represents a file with '.properties' extension. It is distinguished by the
@@ -226,9 +229,9 @@ public class Bundle implements Comparable<Bundle> {
                     "The Bundle points to a file which is not a '.properties' file");
         }
 
-        FileWriter writer = new FileWriter(file);
-        writer.write(formatProperties(templateFile));
-        writer.close();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(formatProperties(templateFile));
+        }
     }
 
     /**
@@ -250,23 +253,35 @@ public class Bundle implements Comparable<Bundle> {
 
     private String formatProperties(File templateFile) throws IOException {
         StringBuilder builder = new StringBuilder();
-        String line = null;
 
-        if (templateFile == null) {
-            for (String key : properties.stringPropertyNames()) {
-                appendNextProperty(builder, key);
-            }
-        } else {
-            BufferedReader reader = new BufferedReader(new FileReader(templateFile));
-            while ((line = reader.readLine()) != null) {
-                appendNextProperty(builder, line);
-            }
-            reader.close();
+        Collection<String> keysOrPropertyStrings = properties.stringPropertyNames();
+        if (templateFile != null) {
+            keysOrPropertyStrings = getPropertyStringList(templateFile);
+        }
+        for (String keyOrPropertyString : keysOrPropertyStrings) {
+            appendNextProperty(builder, keyOrPropertyString);
         }
         return builder.toString();
     }
 
+    private List<String> getPropertyStringList(File templateFile) throws IOException {
+        Objects.requireNonNull(templateFile);
+
+        List<String> keysOrPropertyStrings = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(templateFile))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                keysOrPropertyStrings.add(line);
+            }
+        }
+        return keysOrPropertyStrings;
+    }
+
     private void appendNextProperty(StringBuilder builder, String keyOrPropertyString) {
+        Objects.requireNonNull(builder);
+        Objects.requireNonNull(keyOrPropertyString);
+
         String line = keyOrPropertyString;
         if (!isCommentOrEmptyLine(line)) {
             line = translateProperty(line);

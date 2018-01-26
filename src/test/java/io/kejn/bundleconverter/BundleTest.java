@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import io.kejn.bundleconverter.shared.Path;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import io.kejn.bundleconverter.shared.Path;
 
 /**
  * Tests for {@link Bundle} class.
@@ -209,6 +209,7 @@ public class BundleTest {
         boolean testFailed = false;
         while ((templateLine = templateReader.readLine()) != null) {
             targetLine = targetReader.readLine();
+            System.out.println(templateLine + ", " + targetLine);
             if (targetLine == null || !templateLine.equals(targetLine)) {
                 testFailed = true;
                 break;

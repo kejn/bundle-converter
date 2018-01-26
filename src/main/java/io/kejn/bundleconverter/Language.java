@@ -130,7 +130,7 @@ public enum Language {
     NORTH_NDEBELE("nd", "North Ndebele"), //
     NORTHERN_SAMI("se", "Northern Sami"), //
     NORWEGIAN("no", "Norwegian"), //
-    NORWEGIAN_BOKMÅL("nb", "Norwegian Bokmål"), //
+    NORWEGIAN_BOKMAL("nb", "Norwegian Bokmål"), //
     NORWEGIAN_NYNORSK("nn", "Norwegian Nynorsk"), //
     NYANJA("ny", "Nyanja"), //
     OCCITAN("oc", "Occitan"), //
@@ -190,7 +190,7 @@ public enum Language {
     UZBEK("uz", "Uzbek"), //
     VENDA("ve", "Venda"), //
     VIETNAMESE("vi", "Vietnamese"), //
-    VOLAPÜK("vo", "Volapük"), //
+    VOLAPUK("vo", "Volapük"), //
     WALLOON("wa", "Walloon"), //
     WELSH("cy", "Welsh"), //
     WOLOF("wo", "Wolof"), //

@@ -24,6 +24,9 @@ import com.google.common.io.Files;
  */
 public final class Bundles {
 
+    private Bundles() {
+    }
+
     private static final String FILE_EXTENSION = "properties";
 
     /**
@@ -145,11 +148,7 @@ public final class Bundles {
         Map<String, Set<Bundle>> groupsMap = new TreeMap<>();
         for (Bundle bundle : bundles) {
             String name = bundle.getName();
-            Set<Bundle> set = groupsMap.get(name);
-            if (set == null) {
-                set = new TreeSet<>();
-                groupsMap.put(name, set);
-            }
+            Set<Bundle> set = groupsMap.computeIfAbsent(name, key -> new TreeSet<>());
             set.add(bundle);
         }
         return groupsMap;
