@@ -168,6 +168,29 @@ public class BundleTest {
     }
 
     @Test
+    public void differentBundleLanguageVariantsHaveTheSameName() {
+        // given
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+        Bundle bundle2 = Bundles.newExistingBundle(Path.POLISH_BUNDLE);
+
+        // then
+        bundleIsOK();
+        bundleIsOK(bundle2);
+        assertEquals(bundle.getName(), bundle2.getName());
+    }
+
+    @Test
+    public void bundleWithSameNameAndNameWithLanguageVariantIsDefaultBundle() {
+        // given
+        bundle = Bundles.newExistingBundle(Path.DEFAULT_BUNDLE);
+
+        // then
+        bundleIsOK();
+        assertEquals(bundle.getName(), bundle.getNameWithLanguageVariant());
+        assertTrue(bundle.isDefaultBundle());
+    }
+
+    @Test
     public void canSavePropertiesToFile() throws IOException {
         // given
         final String key = "key";
@@ -209,7 +232,6 @@ public class BundleTest {
         boolean testFailed = false;
         while ((templateLine = templateReader.readLine()) != null) {
             targetLine = targetReader.readLine();
-            System.out.println(templateLine + ", " + targetLine);
             if (targetLine == null || !templateLine.equals(targetLine)) {
                 testFailed = true;
                 break;

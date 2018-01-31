@@ -1,5 +1,10 @@
 package io.kejn.bundleconverter.converter;
 
+import io.kejn.bundleconverter.Bundle;
+import io.kejn.bundleconverter.BundleGroup;
+import io.kejn.bundleconverter.Bundles;
+import io.kejn.bundleconverter.Language;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,11 +24,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
-import io.kejn.bundleconverter.Bundles;
-import io.kejn.bundleconverter.Language;
 
 /**
  * Supports the following conversions:
@@ -250,7 +250,7 @@ public class XlsxConverter {
             if (language == null) {
                 throw new IllegalStateException("Sheet contains unknown language: ["
                         + stringCellValue + "]. Languages supported by API: " + Language
-                                .listSupportedLanguages());
+                                .supportedDisplayLanguages());
             }
 
             Properties properties = sheetColumnToProperties(sheet, index);
@@ -282,8 +282,12 @@ public class XlsxConverter {
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            propertiesToGenerate.setProperty(row.getCell(KEY_COLUMN).getStringCellValue(), row
-                    .getCell(indexOfColumnwithTranslation).getStringCellValue());
+            Cell keyCell = row.getCell(KEY_COLUMN);
+            Cell valueCell = row.getCell(indexOfColumnwithTranslation);
+            if (keyCell != null && valueCell != null) {
+                propertiesToGenerate.setProperty(keyCell.getStringCellValue(), valueCell
+                        .getStringCellValue());
+            }
         }
         return propertiesToGenerate;
     }

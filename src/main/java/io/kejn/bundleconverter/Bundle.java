@@ -171,9 +171,7 @@ public class Bundle implements Comparable<Bundle> {
      * @see #getLanguage()
      */
     public boolean isDefaultBundle() {
-        int index = getNameWithLanguageVariant().indexOf(UNDERSCORE);
-        int langUnderscoreIndex = getNameWithLanguageVariant().length() - UNDERSCORE_POSITION;
-        return index < langUnderscoreIndex;
+        return getNameWithLanguageVariant().equals(getName());
     }
 
     /**

@@ -223,6 +223,7 @@ public class BundleGroup {
      * <b>language</b>
      * <li>the bundle mapped by given <b>language</b> does not contain the mapping
      * for given <b>key</b>
+     * </ul>
      * 
      * @param key the property key
      * @param language the language

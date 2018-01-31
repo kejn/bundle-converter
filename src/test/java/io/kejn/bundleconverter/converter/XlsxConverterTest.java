@@ -6,12 +6,27 @@ import static io.kejn.bundleconverter.converter.AssertionHelper.verifyGroup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import io.kejn.bundleconverter.Bundle;
+import io.kejn.bundleconverter.BundleGroup;
+import io.kejn.bundleconverter.Bundles;
+import io.kejn.bundleconverter.Language;
+import io.kejn.bundleconverter.shared.Path;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -21,12 +36,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
-import io.kejn.bundleconverter.Bundles;
-import io.kejn.bundleconverter.Language;
-import io.kejn.bundleconverter.shared.Path;
-
+/**
+ * Test for {@link XlsxConverter} class.
+ * 
+ * @author kejn
+ */
 public class XlsxConverterTest {
 
     private final XlsxConverter converter = new XlsxConverter();
@@ -244,5 +258,110 @@ public class XlsxConverterTest {
 
         verifyBundle(defaultValues, resultGroupValues.getBundle(Language.DEFAULT));
         verifyBundle(germanValues, resultGroupValues.getBundle(Language.GERMAN));
+    }
+
+    /**
+     * 
+     * @throws IOException should not be thrown
+     */
+    @Test
+    public void shouldgetAllPropertiesFromColumn() throws IOException {
+        // given
+        final String key1 = "key1";
+        final String key2 = "key2";
+        final String value1 = "value1";
+        final String value2 = "value2";
+
+        Properties expectedProperties = new Properties();
+        expectedProperties.setProperty(key1, value1);
+        expectedProperties.setProperty(key2, value2);
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet();
+            createRow(sheet, 0, "header keys", "header values");
+            createRow(sheet, 1, key1, value1);
+            createRow(sheet, 2, key2, value2);
+
+            final int column = 1;
+
+            // when
+            Properties properties = converter.sheetColumnToProperties(sheet, column);
+
+            // then
+            assertNotNull(properties.getProperty(key1));
+            assertEquals(value1, properties.getProperty(key1));
+
+            assertNotNull(properties.getProperty(key2));
+            assertEquals(value2, properties.getProperty(key2));
+        }
+    }
+
+    private void createRow(Sheet sheet, int rowIndex, final String... cellValues) {
+        Row row = sheet.createRow(rowIndex);
+        for (int i = 0; i < cellValues.length; ++i) {
+            Cell keyCell1 = row.createCell(i);
+            keyCell1.setCellValue(cellValues[i]);
+        }
+    }
+
+    @Test
+    public void shouldCreateGroupWithNameEqualToSheetTitle() throws IOException {
+        // given
+        final String sheetname = "name";
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet(sheetname);
+            createRow(sheet, 0, XlsxConverter.KEY_LABEL, Language.DEFAULT.getDisplayLanguage(),
+                    Language.ABKHAZIAN.getDisplayLanguage(), Language.AFAR.getDisplayLanguage(),
+                    Language.AFRIKAANS.getDisplayLanguage());
+            createRow(sheet, 1);
+
+            final File directory = spyDirectory();
+            XlsxConverter spyConverter = spy(converter);
+            
+            // when
+            doReturn(new Properties()).when(spyConverter).sheetColumnToProperties(any(Sheet.class),
+                    anyInt());
+            BundleGroup group = spyConverter.toBundleGroup(sheet, directory);
+
+            // then
+            verify(spyConverter, times(4)).sheetColumnToProperties(any(Sheet.class), anyInt());
+
+            assertNotNull(group);
+            assertEquals(sheetname, group.getName());
+        }
+    }
+
+    private File spyDirectory() {
+        final File directory = mock(File.class);
+
+        when(directory.exists()).thenReturn(true);
+        when(directory.isDirectory()).thenReturn(true);
+        return directory;
+    }
+
+    @Test
+    public void shouldCreateBundleGroupForEachSheetInWorkbook() throws IOException {
+        // given
+        final String[] sheetnames = { "sheet1", "sheet2", "sheet3" };
+        try (Workbook workbook = new XSSFWorkbook()) {
+            for (String sheetname : sheetnames) {
+                Sheet sheet = workbook.createSheet(sheetname);
+                createRow(sheet, 0, XlsxConverter.KEY_LABEL, Language.DEFAULT.getDisplayLanguage());
+                createRow(sheet, 1);
+            }
+            File directory = mock(File.class);
+            XlsxConverter spyConverter = spy(converter);
+
+            Bundle bundle = new Bundle(new File("bundle.properties"));
+            BundleGroup group = new BundleGroup(bundle);
+
+            // when
+            doReturn(group).when(spyConverter).toBundleGroup(any(Sheet.class), any(File.class));
+            spyConverter.toBundleGroupList(workbook, directory);
+
+            // then
+            verify(spyConverter, times(3)).toBundleGroup(any(Sheet.class), any(File.class));
+        }
+
     }
 }

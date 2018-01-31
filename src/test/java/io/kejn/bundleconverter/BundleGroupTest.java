@@ -3,6 +3,7 @@ package io.kejn.bundleconverter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -10,14 +11,15 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import io.kejn.bundleconverter.shared.Path;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import io.kejn.bundleconverter.shared.Path;
 
 /**
  * Tests for {@link BundleGroup} class.
@@ -35,6 +37,13 @@ public class BundleGroupTest {
     @Before
     public void setUp() {
         group = new BundleGroup(BUNDLE_DEFAULT);
+    }
+
+    @Test
+    public void conainsTest() {
+        assertTrue(group.contains(BUNDLE_DEFAULT));
+        assertFalse(group.contains(BUNDLE_POLISH));
+        assertFalse(group.contains(VALUES_DEFAULT));
     }
 
     /**
@@ -63,12 +72,26 @@ public class BundleGroupTest {
     }
 
     /**
-     * A {@link BundleGroup} shold be able to hold more than one {@link Bundle}.
+     * A {@link BundleGroup} should be able to hold more than one {@link Bundle}.
      */
     @Test
-    public void canAddMultipleBundlesToOneGroup() {
+    public void canAddBundleToGroup() {
         // when
         final boolean addedToGroup = group.put(BUNDLE_POLISH);
+
+        // then
+        assertTrue(addedToGroup);
+        assertEquals(2, group.size());
+    }
+
+    /**
+     * A {@link BundleGroup} should be able to be extended by a collection of other
+     * bundles, skipping the duplicates.
+     */
+    @Test
+    public void canAddManyBundlesToGroupAtOnceDuplicatesAreSkipped() {
+        // when
+        final boolean addedToGroup = group.putAll(Arrays.asList(BUNDLE_POLISH, BUNDLE_POLISH));
 
         // then
         assertTrue(addedToGroup);
@@ -133,6 +156,9 @@ public class BundleGroupTest {
         assertEquals(2, group.size());
     }
 
+    /**
+     * The group name should be equal to default bundle's name.
+     */
     @Test
     public void shouldHaveTheSameNameAsTheDefaultBundle() {
         // when
@@ -140,6 +166,50 @@ public class BundleGroupTest {
 
         // then
         assertEquals(bundle.getName(), group.getName());
+    }
+
+    /**
+     * There should be a method allowing to easily get the translated property from
+     * the group.
+     */
+    @Test
+    public void shouldTranslatePropertiesUsingSupportedLanguages() {
+        // given
+        final String key = "key1";
+        group.put(BUNDLE_POLISH);
+
+        // when
+        String polishProperty = group.getProperty(key, Language.POLISH);
+
+        // then
+        assertEquals("wartość1", polishProperty);
+    }
+
+    /**
+     * For unknown languages, the <tt>null</tt> will be returned.
+     */
+    @Test
+    public void shouldReturnNullForUnknownLanguages() {
+        // given
+        final String key = "key1";
+
+        // when
+        String nullProperty = group.getProperty(key, Language.POLISH);
+
+        // then
+        assertNull(nullProperty);
+    }
+
+    @Test
+    public void shouldReturnNullForUnknownKeys() {
+        // given
+        final String unknownKey = "unknown.key";
+
+        // when
+        String nullProperty = group.getProperty(unknownKey, Language.DEFAULT);
+
+        // then
+        assertNull(nullProperty);
     }
 
     @Test

@@ -243,9 +243,9 @@ public enum Language {
     }
 
     /**
-     * @return the list of all {@link Language}s defined in this enum
+     * @return the string list of all {@link Language}s defined in this enum
      */
-    public static String listSupportedLanguages() {
+    public static String supportedDisplayLanguages() {
         return stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
     }
 
