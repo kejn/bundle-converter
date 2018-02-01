@@ -2,11 +2,18 @@ package io.kejn.bundleconverter;
 
 import static java.util.Arrays.stream;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
  * The convenient mappings of ISO codes and display languages generated from
  * {@link java.util.Locale}.
+ * <p>
+ * There are some duplicates on <tt>"ISO code" &lt;-&gt; "display language"</tt>
+ * mappings in {@link Locale}, so to keep also the compatibility with all ISO
+ * codes, some enums are suffsixed with "_2" (as well as their
+ * {@link #displayLanguage} value). Example: {@link #YIDDISH} and
+ * {@link #YIDDISH_2}.
  * 
  * @author kejn
  */
@@ -211,15 +218,16 @@ public enum Language {
     }
 
     /**
-     * Returns a {@link Language} matching given ISO code.
+     * Returns a {@link Language} matching given ISO code. The check is case
+     * insensitive.
      * 
      * @param isoCode the ISO code
      * @return a language matching given ISO code or <tt>null</tt> if no matching
      *         language could be found
      */
-    public static Language forISOCode(String isoCode) {
+    public static Language forIsoCode(String isoCode) {
         for (Language language : values()) {
-            if (language.isoCode.equals(isoCode)) {
+            if (language.isoCode.equalsIgnoreCase(isoCode)) {
                 return language;
             }
         }
@@ -227,7 +235,8 @@ public enum Language {
     }
 
     /**
-     * Returns a {@link Language} matching given display language.
+     * Returns a {@link Language} matching given display language. The check is case
+     * insensitive.
      * 
      * @param displayLanguage the display language
      * @return a language matching given display language or <tt>null</tt> if no
@@ -243,16 +252,29 @@ public enum Language {
     }
 
     /**
+     * Return the comma-separated list of the supported display languages that are
+     * valid for usage with method {@link #forDisplayLanguage(String)}.
+     * 
      * @return the string list of all {@link Language}s defined in this enum
      */
     public static String supportedDisplayLanguages() {
-        return stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(","));
+        return stream(values()).map(Language::getDisplayLanguage).collect(Collectors.joining(", "));
     }
 
+    /**
+     * Gets the display language value for this Language.
+     * 
+     * @return the display language
+     */
     public String getDisplayLanguage() {
         return displayLanguage;
     }
 
+    /**
+     * Gets the ISO code value for this Language.
+     * 
+     * @return the ISO code
+     */
     public String getIsoCode() {
         return isoCode;
     }

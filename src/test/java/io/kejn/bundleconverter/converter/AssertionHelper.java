@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import io.kejn.bundleconverter.Bundle;
+import io.kejn.bundleconverter.BundleGroup;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -12,8 +15,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
 
 class AssertionHelper {
     public static void assertSheetContainsTranslationInColumn(Sheet sheet, String key,

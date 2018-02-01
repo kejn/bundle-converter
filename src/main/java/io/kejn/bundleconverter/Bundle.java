@@ -85,16 +85,16 @@ import org.apache.commons.text.StringEscapeUtils;
  * </blockquote>
  * 
  * @author kejn
+ * 
  * @see Bundles
- * @see Language
  * @see BundleGroup
+ * @see Language
  */
 public class Bundle implements Comparable<Bundle> {
 
     private static final String COMMENT_MARK = "#";
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String UNDERSCORE = "_";
-    private static final int UNDERSCORE_POSITION = 3;
 
     private final File file;
 
@@ -181,7 +181,7 @@ public class Bundle implements Comparable<Bundle> {
     public Language getLanguage() {
         String[] nameWithVariants = getNameWithLanguageVariant().split(UNDERSCORE);
         String isoCode = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
-        return Language.forISOCode(isoCode);
+        return Language.forIsoCode(isoCode);
     }
 
     /**

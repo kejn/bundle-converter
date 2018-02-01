@@ -38,6 +38,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * '.properties' and '.xlsx' file formats.
  * 
  * @author kejn
+ * 
+ * @see BundleGroup
+ * @see Workbook
  */
 public class XlsxConverter {
 

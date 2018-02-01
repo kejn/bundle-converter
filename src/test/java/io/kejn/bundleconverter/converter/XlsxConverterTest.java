@@ -222,16 +222,6 @@ public class XlsxConverterTest {
         verifyBundle(polishBundle, resultGroup.getBundle(Language.POLISH));
     }
 
-    private Workbook dummyWorkbook(List<BundleGroup> groups) {
-        Workbook workbook = new XSSFWorkbook();
-        for (BundleGroup group : groups) {
-            Sheet sheet = workbook.createSheet(group.getName());
-            converter.createHeader(sheet, group);
-            converter.createTranslations(sheet, group);
-        }
-        return workbook;
-    }
-
     @Test
     public void shouldCreateBundleGroupForEachSheet() {
         // given
@@ -296,14 +286,6 @@ public class XlsxConverterTest {
         }
     }
 
-    private void createRow(Sheet sheet, int rowIndex, final String... cellValues) {
-        Row row = sheet.createRow(rowIndex);
-        for (int i = 0; i < cellValues.length; ++i) {
-            Cell keyCell1 = row.createCell(i);
-            keyCell1.setCellValue(cellValues[i]);
-        }
-    }
-
     @Test
     public void shouldCreateGroupWithNameEqualToSheetTitle() throws IOException {
         // given
@@ -331,13 +313,6 @@ public class XlsxConverterTest {
         }
     }
 
-    private File spyDirectory() {
-        final File directory = mock(File.class);
-
-        when(directory.exists()).thenReturn(true);
-        when(directory.isDirectory()).thenReturn(true);
-        return directory;
-    }
 
     @Test
     public void shouldCreateBundleGroupForEachSheetInWorkbook() throws IOException {
@@ -363,5 +338,31 @@ public class XlsxConverterTest {
             verify(spyConverter, times(3)).toBundleGroup(any(Sheet.class), any(File.class));
         }
 
+    }
+
+    private Workbook dummyWorkbook(List<BundleGroup> groups) {
+        Workbook workbook = new XSSFWorkbook();
+        for (BundleGroup group : groups) {
+            Sheet sheet = workbook.createSheet(group.getName());
+            converter.createHeader(sheet, group);
+            converter.createTranslations(sheet, group);
+        }
+        return workbook;
+    }
+
+    private void createRow(Sheet sheet, int rowIndex, final String... cellValues) {
+        Row row = sheet.createRow(rowIndex);
+        for (int i = 0; i < cellValues.length; ++i) {
+            Cell keyCell1 = row.createCell(i);
+            keyCell1.setCellValue(cellValues[i]);
+        }
+    }
+
+    private File spyDirectory() {
+        final File directory = mock(File.class);
+
+        when(directory.exists()).thenReturn(true);
+        when(directory.isDirectory()).thenReturn(true);
+        return directory;
     }
 }

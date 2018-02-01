@@ -21,6 +21,9 @@ import com.google.common.io.Files;
  * {@link Bundle} or {@link BundleGroup} objects.
  * 
  * @author kejn
+ * 
+ * @see Bundle
+ * @see BundleGroup
  */
 public final class Bundles {
 

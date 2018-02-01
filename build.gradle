@@ -2,22 +2,43 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
+group 'io.kejn'
+version '1.0.0'
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task packageJavadoc(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+javadoc {
+  source = sourceSets.main.allJava
+  classpath = configurations.compileClasspath
+
+  options
+  {
+    setMemberLevel JavadocMemberLevel.PUBLIC
+    setAuthor true
+
+    links "https://docs.oracle.com/javase/8/docs/api/"
+  }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId 'io.kejn'
-            artifactId 'bundle-converter'
-            version '1.0-SNAPSHOT'
+            groupId project.group
+            artifactId project.name
+            version project.version
             
             from components.java
             
-            artifact sourceJar {
-                classifier 'sources'
-            }
+            artifact sourceJar
+            artifact packageJavadoc
         }
     }
 }

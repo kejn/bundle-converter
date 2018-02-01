@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * 
  * @author kejn
  * 
- * @see Language
  * @see Bundle
+ * @see Language
  * @see Map
  */
 public class BundleGroup {
@@ -133,6 +133,9 @@ public class BundleGroup {
     }
 
     /**
+     * Gets the default bundle (with properties translated to
+     * {@link Language#DEFAULT}).
+     * 
      * @return the {@link #defaultBundle}
      */
     public Bundle getDefaultBundle() {
@@ -140,6 +143,8 @@ public class BundleGroup {
     }
 
     /**
+     * Number of bundles in this group.
+     * 
      * @return number of bundles in this group
      */
     public int size() {
@@ -256,7 +261,9 @@ public class BundleGroup {
     /**
      * Saves all the bundles in group as '.properties' files matching property keys
      * specified in <b>templateFile</b> and using its file structure. It preserves
-     * the comments and keys order.<br>
+     * the comments and keys order.
+     * 
+     * @param templateFile the template file
      * 
      * @throws IllegalArgumentException if any of the
      *             {@link Bundle#saveToFile(File)} call throws
