@@ -1,9 +1,4 @@
-package io.kejn.bundleconverter.converter;
-
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
-import io.kejn.bundleconverter.Bundles;
-import io.kejn.bundleconverter.Language;
+package com.github.kejn.bundleconverter.converter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +8,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
+
+import com.github.kejn.bundleconverter.Bundle;
+import com.github.kejn.bundleconverter.BundleGroup;
+import com.github.kejn.bundleconverter.Bundles;
+import com.github.kejn.bundleconverter.Language;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;

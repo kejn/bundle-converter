@@ -1,4 +1,4 @@
-package io.kejn.bundleconverter;
+package com.github.kejn.bundleconverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,12 +11,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import io.kejn.bundleconverter.shared.Path;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import com.github.kejn.bundleconverter.Bundle;
+import com.github.kejn.bundleconverter.BundleGroup;
+import com.github.kejn.bundleconverter.Bundles;
+import com.github.kejn.bundleconverter.Language;
+import com.github.kejn.bundleconverter.shared.Path;
 
 import org.junit.Before;
 import org.junit.Test;

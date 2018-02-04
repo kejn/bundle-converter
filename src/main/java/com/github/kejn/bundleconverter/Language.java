@@ -1,4 +1,4 @@
-package io.kejn.bundleconverter;
+package com.github.kejn.bundleconverter;
 
 import static java.util.Arrays.stream;
 

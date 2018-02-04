@@ -1,4 +1,4 @@
-package io.kejn.bundleconverter;
+package com.github.kejn.bundleconverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,14 +6,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import io.kejn.bundleconverter.shared.Path;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+
+import com.github.kejn.bundleconverter.Bundle;
+import com.github.kejn.bundleconverter.Bundles;
+import com.github.kejn.bundleconverter.shared.Path;
 
 import org.junit.Before;
 import org.junit.Rule;

@@ -1,9 +1,11 @@
-package io.kejn.bundleconverter;
+package com.github.kejn.bundleconverter;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Locale;
+
+import com.github.kejn.bundleconverter.Language;
 
 import org.junit.Test;
 

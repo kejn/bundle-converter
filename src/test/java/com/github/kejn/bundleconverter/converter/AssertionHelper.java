@@ -1,14 +1,15 @@
-package io.kejn.bundleconverter.converter;
+package com.github.kejn.bundleconverter.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
-
 import java.util.Iterator;
 import java.util.Set;
+
+import com.github.kejn.bundleconverter.Bundle;
+import com.github.kejn.bundleconverter.BundleGroup;
+import com.github.kejn.bundleconverter.converter.XlsxConverter;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

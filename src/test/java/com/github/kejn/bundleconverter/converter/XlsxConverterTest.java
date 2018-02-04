@@ -1,8 +1,8 @@
-package io.kejn.bundleconverter.converter;
+package com.github.kejn.bundleconverter.converter;
 
-import static io.kejn.bundleconverter.converter.AssertionHelper.assertSheetContainsTranslationInColumn;
-import static io.kejn.bundleconverter.converter.AssertionHelper.verifyBundle;
-import static io.kejn.bundleconverter.converter.AssertionHelper.verifyGroup;
+import static com.github.kejn.bundleconverter.converter.AssertionHelper.assertSheetContainsTranslationInColumn;
+import static com.github.kejn.bundleconverter.converter.AssertionHelper.verifyBundle;
+import static com.github.kejn.bundleconverter.converter.AssertionHelper.verifyGroup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,18 +15,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.kejn.bundleconverter.Bundle;
-import io.kejn.bundleconverter.BundleGroup;
-import io.kejn.bundleconverter.Bundles;
-import io.kejn.bundleconverter.Language;
-import io.kejn.bundleconverter.shared.Path;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
+import com.github.kejn.bundleconverter.Bundle;
+import com.github.kejn.bundleconverter.BundleGroup;
+import com.github.kejn.bundleconverter.Bundles;
+import com.github.kejn.bundleconverter.Language;
+import com.github.kejn.bundleconverter.converter.XlsxConverter;
+import com.github.kejn.bundleconverter.shared.Path;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

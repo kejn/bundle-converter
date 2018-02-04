@@ -3,7 +3,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-group 'io.kejn.bundleconverter'
+group 'com.github.kejn'
 version '1.0.0'
 
 task sourceJar(type: Jar) {
@@ -33,7 +33,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             pom {
-                packaging 'jar'
                 withXml {
                     asNode().children().last() + {
                         resolveStrategy = Closure.DELEGATE_FIRST
@@ -55,7 +54,7 @@ publishing {
                         developers {
                             developer {
                                 id 'kejn'
-                                name 'kejn'
+                                name 'Kamil Niemczyk'
                                 email 'kaen04@gmail.com'
                             }
                         }

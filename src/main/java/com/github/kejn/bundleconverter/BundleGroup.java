@@ -1,4 +1,4 @@
-package io.kejn.bundleconverter;
+package com.github.kejn.bundleconverter;
 
 import java.io.File;
 import java.io.IOException;

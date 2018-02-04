@@ -1,4 +1,4 @@
-package io.kejn.bundleconverter.shared;
+package com.github.kejn.bundleconverter.shared;
 
 import static java.lang.String.format;
 
