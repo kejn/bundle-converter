@@ -3,7 +3,7 @@
 # bundle-converter
 Java library allowing easy conversion between `.properties` and `.xlsx` file formats.
 
-[![screen](https://raw.githubusercontent.com/kejn/bundle-converter/master/img/screen.png)](https://raw.githubusercontent.com/kejn/bundle-converter/master/img/screen.png)
+[![screen](img/screen.png)](img/screen.png)
 
 ### Building
 Open the project directory in command-line and execute:
