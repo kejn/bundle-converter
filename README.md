@@ -4,7 +4,7 @@
 
 Java library allowing easy conversion between `.properties` and `.xlsx` file formats.
 
-![screen](img/screen.png)
+![screen](https://raw.githubusercontent.com/kejn/bundle-converter/master/img/screen.png)
 
 ### Basic usage
 
@@ -43,4 +43,4 @@ Project dependency is available both on [jCenter](https://bintray.com/kejn/maven
 
 ### Something's wrong!
 
-In case something is not working as expected, feel free to create an Issue or PullRequest.
+In case something is not working as expected, feel free to create an [Issue](https://github.com/kejn/bundle-converter/issues) or [PullRequest](https://github.com/kejn/bundle-converter/pulls).
