@@ -15,7 +15,7 @@ There is an example commandline application  project which shows the basic usage
 1. **Easy documentation maintenance**.  
 Keep and manage all the texts used accross your application in a single file. All you have to do is just to convert your `.properties` files after a new release.
 1. **Popular file format**.  
-`.xlsx` files can be easily managed and are also well-known by most PC users, possibly: _your clients_. They will appreciate to always have the insight into what they see in the application and in case some text required to be corrected, their corrections could be done almost without any effort.
+`.xlsx` files can be easily managed and are also well-known by most PC users, possibly: _your clients_. They will appreciate to always have the insight into what they see in the application and in case some text required to be corrected, their corrections could be done almost without any effort. After that, all you have to do is just to convert the `.xlsx` back to `.properties` and commit the changes.
 
 ### Building
 
