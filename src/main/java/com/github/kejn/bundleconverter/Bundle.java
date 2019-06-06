@@ -1,21 +1,16 @@
 package com.github.kejn.bundleconverter;
 
+import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import com.google.common.io.Files;
-
-import org.apache.commons.text.StringEscapeUtils;
+import java.util.*;
 
 /**
  * Represents a file with '.properties' extension. It is distinguished by the
@@ -44,19 +39,19 @@ import org.apache.commons.text.StringEscapeUtils;
  * GETTING PROPERTIES USING AN EXISTING FILE
  * <hr>
  * <blockquote>
- * 
+ *
  * <pre>
  * File file = new File("path/to/file.properties");
  * Bundle bundle = new Bundle(file);
  * Properties prop = bundle.getProperties();
  * </pre>
- * 
+ *
  * </blockquote>
  * <p>
  * SAVING PROPERTIES CREATED AT RUNTIME TO A NEW FILE
  * <hr>
  * <blockquote>
- * 
+ *
  * <pre>
  * Properties prop = new Properties();
  * prop.setProperty("key1", "value1");
@@ -65,13 +60,13 @@ import org.apache.commons.text.StringEscapeUtils;
  * Bundle bundle = new Bundle(file, prop);
  * bundle.saveToFile();
  * </pre>
- * 
+ *
  * </blockquote>
  * <p>
  * UPDATING OR ADDING NEW PROPERTIES USING AN EXISTING FILE
  * <hr>
  * <blockquote>
- * 
+ *
  * <pre>
  * File file = new File("path/to/file.properties");
  * Bundle bundle = new Bundle(file);
@@ -81,11 +76,11 @@ import org.apache.commons.text.StringEscapeUtils;
  * [...]
  * bundle.saveToFile(); // warning! you will overwrite the old file here!
  * </pre>
- * 
+ *
  * </blockquote>
- * 
+ *
  * @author kejn
- * 
+ *
  * @see Bundles
  * @see BundleGroup
  * @see Language
@@ -107,9 +102,9 @@ public class Bundle implements Comparable<Bundle> {
     /**
      * Creates a new {@link Bundle} object using the properties from the specified
      * <b>file</b>.
-     * 
+     *
      * @param file the file that should have the '.properties' extension
-     * 
+     *
      * @throws IllegalArgumentException if the <b>file</b> does not have the
      *             '.properties' extension
      */
@@ -123,10 +118,10 @@ public class Bundle implements Comparable<Bundle> {
     /**
      * Creates a new {@link Bundle} with a handle to given <b>file</b> using the
      * provided <b>properties</b>.
-     * 
+     *
      * @param file the file that should have the '.properties' extension
      * @param properties CANNOT BE NULL; the initial properties values
-     * 
+     *
      * @throws IllegalArgumentException if the <b>file</b> does not have the
      *             '.properties' extension
      * @throws NullPointerException if the <b>properties</b> argument is null
@@ -141,13 +136,22 @@ public class Bundle implements Comparable<Bundle> {
      * if the file name of the {@link #file} is "bundle_es.properties", then this
      * method will return only "bundle" (the file extension and the language ISO
      * code is skipped).
-     * 
+     *
      * @return the name of this bundle without the extension and language ISO code.
-     * 
+     *
      * @see #getNameWithLanguageVariant()
      */
     public String getName() {
-        return getNameWithLanguageVariant().split(UNDERSCORE)[0];
+        String nameWithLanguageVariant = getNameWithLanguageVariant();
+        String[] splitName = nameWithLanguageVariant.split(UNDERSCORE);
+        int lastIndex = splitName[0].length();
+        for (int i=1; i < splitName.length; ++i) {
+            if (Language.forIsoCode(splitName[i]) != null) {
+                break;
+            }
+            lastIndex += splitName[i].length() + 1;
+        }
+        return StringUtils.substring(nameWithLanguageVariant, 0, lastIndex);
     }
 
     /**
@@ -155,7 +159,7 @@ public class Bundle implements Comparable<Bundle> {
      * the file name without extension. For example, if the file name of the
      * {@link #file} is "bundle_es.properties", then this method will return only
      * "bundle_es" (the file extension is skipped).
-     * 
+     *
      * @return the name of this bundle including the language ISO code
      */
     public String getNameWithLanguageVariant() {
@@ -164,10 +168,10 @@ public class Bundle implements Comparable<Bundle> {
 
     /**
      * Checks if this object is a "default" language variant of given bundle.
-     * 
+     *
      * @return <code>true</code> if this is a "default" language variant of given
      *         bundle
-     * 
+     *
      * @see #getLanguage()
      */
     public boolean isDefaultBundle() {
@@ -179,7 +183,9 @@ public class Bundle implements Comparable<Bundle> {
      *         {@link #file} name.
      */
     public Language getLanguage() {
-        String[] nameWithVariants = getNameWithLanguageVariant().split(UNDERSCORE);
+        String nameWithLanguageVariant = getNameWithLanguageVariant();
+        String suffix = StringUtils.substringAfter(nameWithLanguageVariant, getName());
+        String[] nameWithVariants = suffix.split(UNDERSCORE);
         String isoCode = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
         return Language.forIsoCode(isoCode);
     }
@@ -188,7 +194,7 @@ public class Bundle implements Comparable<Bundle> {
      * Return the {@link #properties} of this bundle. It attempts to load the
      * properties from {@link #file} if they were not loaded yet (or initialized
      * with a proper constructor).
-     * 
+     *
      * @return the {@link #properties} of this bundle (CAN BE NULL)
      */
     public Properties getProperties() {
@@ -211,9 +217,9 @@ public class Bundle implements Comparable<Bundle> {
      * <b>Note:</b> If the {@link #properties} contain some keys not included in the
      * <b>templateFile</b>, then the result file will be missing these extra
      * properties.
-     * 
+     *
      * @param templateFile the template file
-     * 
+     *
      * @throws IllegalStateException if the {@link #file} points to a file, which is
      *             not a '.properties' file.
      * @throws IOException if the {@link #file} exists but is a directory rather
@@ -234,7 +240,7 @@ public class Bundle implements Comparable<Bundle> {
 
     /**
      * Saves all {@link #properties} of this object to {@link #file}.
-     * 
+     *
      * @throws IllegalStateException if the {@link #file} points to a file, which is
      *             not a '.properties' file.
      * @throws IOException if the {@link #file} exists but is a directory rather

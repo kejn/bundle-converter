@@ -1,10 +1,10 @@
 package com.github.kejn.bundleconverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.github.kejn.bundleconverter.shared.Path;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,14 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.github.kejn.bundleconverter.Bundle;
-import com.github.kejn.bundleconverter.Bundles;
-import com.github.kejn.bundleconverter.shared.Path;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link Bundle} class.
@@ -117,7 +110,7 @@ public class BundleTest {
         assertEquals("Hash codes of both bundles should be equal", bundle.hashCode(), bundle3
                 .hashCode());
 
-        assertTrue("Equals method is not reflexive", bundle.equals(bundle));
+        assertEquals("Equals method is not reflexive", bundle, bundle);
         assertTrue("Equals method is not symmetric", bundle.equals(bundle2) && bundle2.equals(
                 bundle));
         assertTrue("Equals method is not transitive", bundle.equals(bundle3) && bundle2.equals(
@@ -243,5 +236,22 @@ public class BundleTest {
         targetReader.close();
         assertFalse(String.format("Assertion failed. templateLine(%s) != targetLine(%s)",
                 templateLine, targetLine), testFailed);
+    }
+
+    @Test
+    public void bundleBaseNameCanContainUnderscore() {
+        // given
+        String baseName = "bundle_underscore";
+        bundle = Bundles.newNotExistingBundle(baseName + ".properties", new Properties());
+        Bundle bundle2 = Bundles.newNotExistingBundle(baseName + "_pl.properties", new Properties());
+
+        // then
+        assertEquals(baseName, bundle.getName());
+        assertTrue(bundle.isDefaultBundle());
+        assertEquals(Language.DEFAULT, bundle.getLanguage());
+
+        assertEquals(baseName, bundle2.getName());
+        assertTrue(!bundle2.isDefaultBundle());
+        assertEquals(Language.POLISH, bundle2.getLanguage());
     }
 }
