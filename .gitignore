@@ -46,3 +46,5 @@ gradle-app.setting
 .project
 .settings/
 
+# IntelliJ IDEA #
+.idea/
