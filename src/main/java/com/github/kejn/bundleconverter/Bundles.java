@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains static methods that can be helpful when using or creating the
@@ -248,5 +249,26 @@ public final class Bundles {
      */
     public static Bundle newNotExistingBundle(File file, Properties properties) {
         return new Bundle(file, properties);
+    }
+
+    public static String detectBaseName(String bundleFileName, BundleConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException("BundleConfig may not be null");
+        }
+        String[] splitName = bundleFileName.split(config.getVariantSeparator());
+        int lastIndex = splitName[0].length();
+        for (int i=1; i < splitName.length; ++i) {
+            if (Language.forIsoCode(splitName[i]) != null) {
+                break;
+            }
+            lastIndex += splitName[i].length() + 1;
+        }
+        return StringUtils.substring(bundleFileName, 0, lastIndex);
+    }
+
+    public static List<String> getVariantsList(String bundleFileName, BundleConfig config) {
+        String baseName = detectBaseName(bundleFileName, config);
+        String suffix = StringUtils.substringAfter(bundleFileName, baseName);
+        return Arrays.asList(suffix.split(config.getVariantSeparator()));
     }
 }

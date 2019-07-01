@@ -1,7 +1,6 @@
 package com.github.kejn.bundleconverter;
 
 import com.google.common.io.Files;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.BufferedReader;
@@ -87,11 +86,12 @@ import java.util.*;
  */
 public class Bundle implements Comparable<Bundle> {
 
-    private static final String COMMENT_MARK = "#";
-    private static final String KEY_VALUE_SEPARATOR = "=";
-    private static final String UNDERSCORE = "_";
-
     private final File file;
+    private final BundleConfig config;
+
+    private final String baseName;
+    private final Language language;
+    private final String country;
 
     private Properties properties;
 
@@ -109,10 +109,7 @@ public class Bundle implements Comparable<Bundle> {
      *             '.properties' extension
      */
     public Bundle(File file) {
-        if (!Bundles.fileExtensionIsValid(file)) {
-            throw new IllegalArgumentException("Input file should have '.properties' extension");
-        }
-        this.file = file;
+        this(file, new Properties());
     }
 
     /**
@@ -127,8 +124,26 @@ public class Bundle implements Comparable<Bundle> {
      * @throws NullPointerException if the <b>properties</b> argument is null
      */
     public Bundle(File file, Properties properties) {
-        this(file);
-        setProperties(Objects.requireNonNull(properties));
+        this(file, properties, new DefaultBundleConfig());
+    }
+
+    public Bundle(File file, Properties properties, BundleConfig config) {
+        if (!Bundles.fileExtensionIsValid(file)) {
+            throw new IllegalArgumentException("Input file should have '.properties' extension");
+        }
+        this.file = file;
+        this.properties = Objects.requireNonNull(properties);
+        this.config = config;
+
+        String fullName = getNameWithVariants();
+        List<String> variantsList = Bundles.getVariantsList(fullName, config);
+        this.baseName = Bundles.detectBaseName(fullName, config);
+        this.language = Language.forIsoCode(CollectionUtil.getOrDefault(variantsList, config.getLanguageIndex(), ""));
+        this.country = CollectionUtil.getOrDefault(variantsList, config.getCountryIndex(), "");
+    }
+
+    public BundleConfig getConfig() {
+        return config;
     }
 
     /**
@@ -139,30 +154,21 @@ public class Bundle implements Comparable<Bundle> {
      *
      * @return the name of this bundle without the extension and language ISO code.
      *
-     * @see #getNameWithLanguageVariant()
+     * @see #getNameWithVariants()
      */
     public String getName() {
-        String nameWithLanguageVariant = getNameWithLanguageVariant();
-        String[] splitName = nameWithLanguageVariant.split(UNDERSCORE);
-        int lastIndex = splitName[0].length();
-        for (int i=1; i < splitName.length; ++i) {
-            if (Language.forIsoCode(splitName[i]) != null) {
-                break;
-            }
-            lastIndex += splitName[i].length() + 1;
-        }
-        return StringUtils.substring(nameWithLanguageVariant, 0, lastIndex);
+        return baseName;
     }
 
     /**
-     * Returns the name of this bundle including the language ISO code. It is simply
-     * the file name without extension. For example, if the file name of the
+     * Returns the name of this bundle including the language ISO code (and other variants if present).
+     * It is simply the file name without extension. For example, if the file name of the
      * {@link #file} is "bundle_es.properties", then this method will return only
      * "bundle_es" (the file extension is skipped).
      *
      * @return the name of this bundle including the language ISO code
      */
-    public String getNameWithLanguageVariant() {
+    public String getNameWithVariants() {
         return Files.getNameWithoutExtension(file.getName());
     }
 
@@ -175,7 +181,7 @@ public class Bundle implements Comparable<Bundle> {
      * @see #getLanguage()
      */
     public boolean isDefaultBundle() {
-        return getNameWithLanguageVariant().equals(getName());
+        return getNameWithVariants().equals(getName());
     }
 
     /**
@@ -183,11 +189,14 @@ public class Bundle implements Comparable<Bundle> {
      *         {@link #file} name.
      */
     public Language getLanguage() {
-        String nameWithLanguageVariant = getNameWithLanguageVariant();
-        String suffix = StringUtils.substringAfter(nameWithLanguageVariant, getName());
-        String[] nameWithVariants = suffix.split(UNDERSCORE);
-        String isoCode = nameWithVariants.length > 1 ? nameWithVariants[1] : "";
-        return Language.forIsoCode(isoCode);
+        return language;
+    }
+
+    /**
+     * @return the country ISO code of this bundle determined from the {@link #file} name.
+     */
+    public String getCountry() {
+        return country;
     }
 
     /**
@@ -198,12 +207,10 @@ public class Bundle implements Comparable<Bundle> {
      * @return the {@link #properties} of this bundle (CAN BE NULL)
      */
     public Properties getProperties() {
-        if (properties == null && file.exists()) {
+        if (properties.isEmpty() && file.exists()) {
             try {
-                properties = new Properties();
                 properties.load(new FileInputStream(file));
             } catch (IOException e) {
-                properties = null;
             }
         }
         return properties;
@@ -295,26 +302,22 @@ public class Bundle implements Comparable<Bundle> {
     }
 
     private boolean isCommentOrEmptyLine(String line) {
-        return line.startsWith(COMMENT_MARK) || line.isEmpty();
+        return line.startsWith(config.getCommentMark()) || line.isEmpty();
     }
 
     private String translateProperty(String keyOrPropertyString) {
-        StringTokenizer tokenizer = new StringTokenizer(keyOrPropertyString, KEY_VALUE_SEPARATOR);
+        StringTokenizer tokenizer = new StringTokenizer(keyOrPropertyString, config.getKeyValueSeparator());
         String key = tokenizer.nextToken().trim();
         String value = properties.getProperty(key);
 
         StringBuilder translatedProperty = new StringBuilder();
         if (value == null || value.isEmpty()) {
-            translatedProperty.append(COMMENT_MARK);
+            translatedProperty.append(config.getCommentMark());
         }
         translatedProperty.append(key);
-        translatedProperty.append(KEY_VALUE_SEPARATOR);
+        translatedProperty.append(config.getKeyValueSeparator());
         translatedProperty.append(value);
         return translatedProperty.toString();
-    }
-
-    private void setProperties(Properties properties) {
-        this.properties = properties;
     }
 
     /*
@@ -323,7 +326,7 @@ public class Bundle implements Comparable<Bundle> {
 
     @Override
     public int hashCode() {
-        return getNameWithLanguageVariant().hashCode();
+        return getNameWithVariants().hashCode();
     }
 
     @Override
@@ -345,12 +348,12 @@ public class Bundle implements Comparable<Bundle> {
      */
 
     @Override
-    public int compareTo(Bundle o) {
-        if (o == null) {
+    public int compareTo(Bundle other) {
+        if (other == null) {
             return -1;
         }
-        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithLanguageVariant(), o
-                .getNameWithLanguageVariant());
+        return String.CASE_INSENSITIVE_ORDER.compare(this.getNameWithVariants(), other
+                .getNameWithVariants());
     }
 
 }

@@ -181,7 +181,7 @@ public class BundleTest {
 
         // then
         bundleIsOK();
-        assertEquals(bundle.getName(), bundle.getNameWithLanguageVariant());
+        assertEquals(bundle.getName(), bundle.getNameWithVariants());
         assertTrue(bundle.isDefaultBundle());
     }
 
@@ -251,7 +251,24 @@ public class BundleTest {
         assertEquals(Language.DEFAULT, bundle.getLanguage());
 
         assertEquals(baseName, bundle2.getName());
-        assertTrue(!bundle2.isDefaultBundle());
+        assertFalse(bundle2.isDefaultBundle());
         assertEquals(Language.POLISH, bundle2.getLanguage());
+    }
+
+    @Test
+    public void bundleSupportsCountryVariant() {
+        // given
+        String baseName = "bundle";
+        String language = "pl";
+        String country = "PL";
+        String fileName = baseName + "_" + language + "_" + country + ".properties";
+        bundle = Bundles.newNotExistingBundle(fileName, new Properties());
+
+        // then
+        assertEquals(baseName, bundle.getName());
+        assertFalse(bundle.isDefaultBundle());
+
+        assertEquals(Language.POLISH, bundle.getLanguage());
+        assertEquals("PL", bundle.getCountry());
     }
 }
